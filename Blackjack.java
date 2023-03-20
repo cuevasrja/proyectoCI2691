@@ -47,12 +47,12 @@ public class Blackjack{
             // Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
             System.out.print("Ingrese su apuesta: ");
-            apuesta = RepartirCartasIniciales.pedirApuesta(creditos, lectura.nextInt());
+            apuesta = pedirApuesta(creditos, lectura.nextInt());
             // Validar apuesta, si es invalida pedir de nuevo
             while(apuesta == 0){
                 System.out.println("Apuesta invalida!");
                 System.out.print("Ingrese su apuesta: ");
-                apuesta = RepartirCartasIniciales.pedirApuesta(creditos, lectura.nextInt());
+                apuesta = pedirApuesta(creditos, lectura.nextInt());
             }
             // Mostrar apuesta y restar creditos disponibles
             System.out.println("Apuesta: " + apuesta);
@@ -61,49 +61,57 @@ public class Blackjack{
             System.out.println("Sus creditos restantes son: " + creditos);
 
             // * Repartir y mostrar cartas del jugador
-            manoJugador = RepartirCartasIniciales.repartirCartasIndice(barajaIndex);
-            manoJugadorString = RepartirCartasIniciales.repartirCartas(manoJugador, baraja);
-            tipoManoJugador = RepartirCartasIniciales.repartirTipos(manoJugador, tipos);
+            manoJugador = repartirCartasIndice(barajaIndex);
+            manoJugadorString = repartirCartas(manoJugador, baraja);
+            tipoManoJugador = repartirTipos(manoJugador, tipos);
             System.out.print("Sus cartas son: ");
             System.out.print(manoJugadorString[0] + " de " + tipoManoJugador[0]);
             System.out.println(" y " + manoJugadorString[1] + " de " + tipoManoJugador[1]);
-            manoJugadorValor = RepartirCartasIniciales.valorCartas(manoJugador);
+            manoJugadorValor = valorCartas(manoJugador);
 
             // * Repartir y mostrar cartas del croupier
             // ! Solo se muestra la primera carta del croupier
-            manoCroupier = RepartirCartasIniciales.repartirCartasIndice(barajaIndex);
-            manoCroupierString = RepartirCartasIniciales.repartirCartas(manoCroupier, baraja);
-            tipoManoCroupier = RepartirCartasIniciales.repartirTipos(manoCroupier, tipos);
+            manoCroupier = repartirCartasIndice(barajaIndex);
+            manoCroupierString = repartirCartas(manoCroupier, baraja);
+            tipoManoCroupier = repartirTipos(manoCroupier, tipos);
             System.out.print("La carta del croupier es: ");
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
-            manoCroupierValor = RepartirCartasIniciales.valorCartas(manoCroupier);
+            manoCroupierValor = valorCartas(manoCroupier);
 
              // Turno del jugador
             if(manoJugadorValor == 21){
-                AccionDelJugador.jugadorTieneBlackJack(manoJugadorValor);
+                jugadorTieneBlackJack(manoJugadorValor);
                 creditos = creditos + apuesta + (apuesta * 3) / 2;
                 //Funcion de acabar juego
-            }else if(manoJugadorValor < 21){                
-                if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 3){
+            }
+            else if(manoJugadorValor < 21){                
+                if(jugadorNoTieneBlackJack(manoJugadorValor) == 3){
                     if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                         apuesta = apuesta * 2;
-                    }else{
-                    System.out.println("No puede doblar!");
-                }                
-            }else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 2){
-                // Funcion de acabar turno                
-            }else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 1){
-                // Funcion de dar UNA carta                
+                    }
+                    else{
+                        System.out.println("No puede doblar!");
+                    }                
+                }
+                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 2){
+                    // Funcion de acabar turno                
+                }
+                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 1){
+                    // Funcion de dar UNA carta                
+                }
+                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 4){
+                    // Funcion de salir del juego
+                }
+                else{
+                    System.out.println("Opcion Invalida");
+                }
             }
-            else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 4){
-                // Funcion de salir del juego
-            }
-        }else{
-            AccionDelJugador.jugadorTieneMasDe21(manoJugadorValor);
+            else{
+                jugadorTieneMasDe21(manoJugadorValor);
        
-        juegos++;
+                juegos++;
+            }
         }
-    }
         
         // Cerrar Scanner
         lectura.close();
@@ -114,6 +122,128 @@ public class Blackjack{
         // System.out.println("Juegos empatados: " + empates);
         // System.out.println("Creditos restantes: " + creditos);
         System.out.println("Gracias por jugar!");
+    }
+
+    //@ requires creditos >= 10 && ap >= 10;
+    //@ ensures \result >= 10 || \result == 0;
+    public static /*@ pure @*/ int pedirApuesta(int creditos, int ap){
+        int apuestaMin = 10;
+        int apuesta = ap;
+        if(apuesta < apuestaMin){
+            apuesta = 0;
+        }
+        else if(apuesta > creditos){ 
+            apuesta = 0;
+        }
+        return apuesta;
+    }
+    //@ requires baraja.length > 0 && baraja.length <= 56;
+    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
+    public static /*@ pure @*/ int[] repartirCartasIndice(int[] baraja){
+        int[] mano = new int[2];
+        int[] barajaAux = baraja;
+        int carta1 = (int) (Math.random() * barajaAux.length);
+        mano[0] = barajaAux[carta1];
+        barajaAux = eliminarCartaIndice(barajaAux, carta1);
+        int carta2 = (int) (Math.random() * barajaAux.length);
+        //@ assume 0 <= carta2 && carta2 < barajaAux.length;
+        mano[1] = barajaAux[carta2];
+        barajaAux = eliminarCartaIndice(barajaAux, carta2);
+        return mano;
+    }
+    //@ requires baraja.length > 0 && baraja.length <= 56 &&carta >= 0 && carta < baraja.length;
+    //@ ensures \result.length < baraja.length;
+    public static /*@ pure @*/ int[] eliminarCartaIndice(int[] baraja, int carta){
+        int[] barajaAux = new int[baraja.length - 1];
+        int j = 0;
+        int i = 0;
+        //@ maintaining 0 <= i && i <= baraja.length && 0 <= j && j <= barajaAux.length;
+        //@ decreases baraja.length - i;
+        while(0 <= i && i < barajaAux.length){
+            if(i != carta && j < barajaAux.length && 0 <= j){
+                barajaAux[j] = baraja[i];
+                j++;
+            }
+            i = i+1;
+        }
+        return barajaAux;
+    }
+    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length == 2 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < baraja.length);
+    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
+    public static /*@ pure @*/ String[] repartirCartas(int[] indices, String[] baraja){
+        String[] mano = new String[2];
+        int i = 0;
+        //@ maintaining 0 <= i && i <= mano.length;
+        //@ decreases mano.length - i;
+        while(0 <= i && i < mano.length){
+            mano[i] = baraja[indices[i]];
+            i = i+1;
+        }
+        return mano;
+    }
+    //@ requires tipos.length == 4 && indices.length == 2 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < tipos.length);
+    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
+    public static /*@ pure @*/ String[] repartirTipos(int[] indices, String[] tipos){
+        String[] tipo = new String[2];
+        int i = 0;
+        //@ maintaining 0 <= i && i <= tipo.length;
+        //@ decreases tipo.length - i;
+        while(0 <= i && i < tipo.length){
+            tipo[i] = tipos[indices[i]%4];
+            i = i+1;
+        }
+        return tipo;
+    }
+    //
+    public static /*@ pure @*/ int valorCartas(int[] indices){
+        int valor = 0;
+        int i = 0;
+        //@ maintaining 0 <= i && i <= indices.length;
+        //@ decreases indices.length - i;
+        while(0 <= i && i < indices.length){
+            //@ assume 0 <= indices[i] && indices[i] < 56;
+            //@ assume 0 <= valor && valor < 22;
+            if(indices[i] <= 35){
+                valor = valor + indices[i]/4 + 1;
+            }
+            else if(indices[i] <= 51){
+                valor = valor + 10;
+            }
+            else{
+                valor = valor + 11;
+            }
+            i = i+1;
+        }
+        return valor;
+    }
+    public static void jugadorTieneBlackJack(int a) { 
+        System.out.println("BlackJack! Usted ha ganado.");        
+    } 
+
+    public static int jugadorNoTieneBlackJack(int a) {       
+        System.out.println("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");                   
+        Scanner opcion = new Scanner(System.in);
+        int decision = Integer.parseInt(opcion.nextLine());
+
+        int accion = 0;            
+        if (decision == 1){                     
+            accion = 1;                
+        }else if(decision == 2){                    
+            accion = 2;                
+        }else if(decision == 3){                    
+            accion = 3;                
+        }else if(decision == 4){                    
+            accion = 4;                
+        }else{
+            System.out.println("Error! debe introducir una de las opciones");
+        };            
+        opcion.close();
+        return accion;       
+        }   
+
+    public static void jugadorTieneMasDe21(int a) {                
+        System.out.println("Usted ha perdido esta mano");
+        
     }
 }
 
