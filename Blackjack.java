@@ -40,10 +40,14 @@ public class Blackjack{
             String[] manoJugadorString;
             String[] tipoManoJugador;
             int manoJugadorValor = 0;
+            int cartasJugador = 2;
             int[] manoCroupier;
             String[] manoCroupierString;
             String[] tipoManoCroupier;
             int manoCroupierValor = 0;
+            int cartasCroupier = 2;
+            Boolean partidaContinua = true;
+
             // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
             System.out.print("Ingrese su apuesta: ");
@@ -78,39 +82,42 @@ public class Blackjack{
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
             manoCroupierValor = valorCartas(manoCroupier);
 
-            // ? Turno del jugador
-            if(manoJugadorValor == 21){
-                jugadorTieneBlackJack(manoJugadorValor);
-                creditos = creditos + apuesta + (apuesta * 3) / 2;
-                // ? Funcion de acabar juego
-            }
-            else if(manoJugadorValor < 21){                
-                if(jugadorNoTieneBlackJack(manoJugadorValor) == 3){
-                    if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
-                        apuesta = apuesta * 2;
+            // TODO: Agregar metodos para cada caso
+            while(partidaContinua){
+                // ? Turno del jugador
+                if(manoJugadorValor == 21){
+                    jugadorTieneBlackJack(manoJugadorValor);
+                    creditos = creditos + apuesta + (apuesta * 3) / 2;
+                    // ? Funcion de acabar juego
+                }
+                else if(manoJugadorValor < 21){                
+                    if(jugadorNoTieneBlackJack(manoJugadorValor) == 3){
+                        if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
+                            apuesta = apuesta * 2;
+                        }
+                        else{
+                            System.out.println("No puede doblar!");
+                        }                
+                    }
+                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 2){
+                        // ? Funcion de acabar turno                
+                    }
+                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 1){
+                        // ? Funcion de dar UNA carta                
+                    }
+                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 4){
+                        // ? Funcion de salir del juego
+                        partidaContinua = false;
                     }
                     else{
-                        System.out.println("No puede doblar!");
-                    }                
-                }
-                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 2){
-                    // ? Funcion de acabar turno                
-                }
-                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 1){
-                    // ? Funcion de dar UNA carta                
-                }
-                else if(jugadorNoTieneBlackJack(manoJugadorValor) == 4){
-                    // ? Funcion de salir del juego
+                        System.out.println("Opcion Invalida");
+                    }
                 }
                 else{
-                    System.out.println("Opcion Invalida");
+                    jugadorTieneMasDe21(manoJugadorValor);
                 }
             }
-            else{
-                jugadorTieneMasDe21(manoJugadorValor);
-       
-                juegos++;
-            }
+            juegos++;
         }
         
         // * Cerrar Scanner
