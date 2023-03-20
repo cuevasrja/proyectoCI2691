@@ -20,14 +20,6 @@ public class Blackjack{
             "J", "J", "J", "Q", "Q", "Q", "Q", "K", "K", "K", "K", "Comodin", "Comodin", 
             "Comodin", "Comodin"
         };
-        int[] manoJugador;
-        String[] manoJugadorString;
-        String[] tipoManoJugador;
-        int manoJugadorValor = 0;
-        int[] manoCroupier;
-        String[] manoCroupierString;
-        String[] tipoManoCroupier;
-        int manoCroupierValor = 0;
         int[] resultado;
         int juegos = 0;
         int ganadas = 0;
@@ -35,26 +27,34 @@ public class Blackjack{
         int empates = 0;
         int apuesta = 0;
 
-        // Bienvenida y pedir nombre
+        // * Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
         System.out.print("Ingrese su nombre: ");
-        // Leer nombre y declarar Scanner
+        // * Leer nombre y declarar Scanner
         Scanner lectura = new Scanner (System.in);
         String nombre = lectura.nextLine();
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
-            // Mostrar creditos y pedir apuesta
+            int[] manoJugador;
+            String[] manoJugadorString;
+            String[] tipoManoJugador;
+            int manoJugadorValor = 0;
+            int[] manoCroupier;
+            String[] manoCroupierString;
+            String[] tipoManoCroupier;
+            int manoCroupierValor = 0;
+            // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
             System.out.print("Ingrese su apuesta: ");
             apuesta = pedirApuesta(creditos, lectura.nextInt());
-            // Validar apuesta, si es invalida pedir de nuevo
+            // * Validar apuesta, si es invalida pedir de nuevo
             while(apuesta == 0){
                 System.out.println("Apuesta invalida!");
                 System.out.print("Ingrese su apuesta: ");
                 apuesta = pedirApuesta(creditos, lectura.nextInt());
             }
-            // Mostrar apuesta y restar creditos disponibles
+            // * Mostrar apuesta y restar creditos disponibles
             System.out.println("Apuesta: " + apuesta);
             // TODO: Los creditos se restan al final de cada juego. Aun asi, se restan aqui para que el usuario no pueda apostar mas de lo que se tiene.
             creditos -= apuesta;
@@ -78,11 +78,11 @@ public class Blackjack{
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
             manoCroupierValor = valorCartas(manoCroupier);
 
-             // Turno del jugador
+            // ? Turno del jugador
             if(manoJugadorValor == 21){
                 jugadorTieneBlackJack(manoJugadorValor);
                 creditos = creditos + apuesta + (apuesta * 3) / 2;
-                //Funcion de acabar juego
+                // ? Funcion de acabar juego
             }
             else if(manoJugadorValor < 21){                
                 if(jugadorNoTieneBlackJack(manoJugadorValor) == 3){
@@ -94,13 +94,13 @@ public class Blackjack{
                     }                
                 }
                 else if(jugadorNoTieneBlackJack(manoJugadorValor) == 2){
-                    // Funcion de acabar turno                
+                    // ? Funcion de acabar turno                
                 }
                 else if(jugadorNoTieneBlackJack(manoJugadorValor) == 1){
-                    // Funcion de dar UNA carta                
+                    // ? Funcion de dar UNA carta                
                 }
                 else if(jugadorNoTieneBlackJack(manoJugadorValor) == 4){
-                    // Funcion de salir del juego
+                    // ? Funcion de salir del juego
                 }
                 else{
                     System.out.println("Opcion Invalida");
@@ -113,7 +113,7 @@ public class Blackjack{
             }
         }
         
-        // Cerrar Scanner
+        // * Cerrar Scanner
         lectura.close();
         // Mostrar resultados y finalizar juego
         // System.out.println("Juegos jugados: " + juegos + " de " + juegosMax);
@@ -138,21 +138,24 @@ public class Blackjack{
         return apuesta;
     }
     //@ requires baraja.length > 0 && baraja.length <= 56;
-    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
+    //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
     public static /*@ pure @*/ int[] repartirCartasIndice(int[] baraja){
         int[] mano = new int[2];
         int[] barajaAux = baraja;
-        int carta1 = (int) (Math.random() * barajaAux.length);
-        mano[0] = barajaAux[carta1];
-        barajaAux = eliminarCartaIndice(barajaAux, carta1);
-        int carta2 = (int) (Math.random() * barajaAux.length);
-        //@ assume 0 <= carta2 && carta2 < barajaAux.length;
-        mano[1] = barajaAux[carta2];
-        barajaAux = eliminarCartaIndice(barajaAux, carta2);
+        int i = 0;
+        //@ maintaining 0 <= i && i <= mano.length;
+        //@ decreases mano.length - i;
+        while(0 <= i && i < mano.length){
+            int carta = (int) (Math.random() * barajaAux.length);
+            //@ assume 0 <= carta && carta < barajaAux.length;
+            mano[i] = barajaAux[carta];
+            barajaAux = eliminarCartaIndice(barajaAux, carta);
+            i = i+1;
+        }
         return mano;
     }
-    //@ requires baraja.length > 0 && baraja.length <= 56 &&carta >= 0 && carta < baraja.length;
-    //@ ensures \result.length < baraja.length;
+    //@ requires baraja.length > 0 && carta >= 0 && carta < baraja.length;
+    //@ ensures \result.length <= baraja.length;
     public static /*@ pure @*/ int[] eliminarCartaIndice(int[] baraja, int carta){
         int[] barajaAux = new int[baraja.length - 1];
         int j = 0;
@@ -168,10 +171,54 @@ public class Blackjack{
         }
         return barajaAux;
     }
-    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length == 2 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < baraja.length);
+    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length > 0 && indices.length <= baraja.length;
+    //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
+    public static /*@ pure @*/ int[] agregarCartaAlMazo(int[] indices, int[] baraja){
+        int[] mano = new int[indices.length + 1];
+        int[] barajaAux = new int[baraja.length - indices.length];
+        int carta = (int) (Math.random() * barajaAux.length);
+        int i = 0;
+        int j = 0;
+        //@ maintaining 0 <= i && i <= baraja.length && 0 <= j && j <= barajaAux.length;
+        //@ decreases baraja.length - i;
+        while(0 <= i && i < baraja.length && 0 <= j && j < barajaAux.length){
+            int k = 0;
+            boolean existe = false;
+            //@ maintaining 0 <= k && k <= indices.length;
+            //@ decreases indices.length - k;
+            while(0 <= k && k < indices.length && !existe){
+                if(baraja[i] == indices[k]){
+                    existe = true;
+                }
+                k++;
+            }
+            if(!existe){
+                barajaAux[j] = baraja[i];
+                j = j+1;
+            }
+            i = i+1;
+        }
+
+        i = 0;
+        //@maintaining 0 <= i && i <= mano.length;
+        //@decreases mano.length - i;
+        while(0 <= i && i < mano.length){
+            if(i < indices.length){
+                mano[i] = indices[i];
+            }
+            else{
+                //@ assume 0 <= carta && carta < barajaAux.length;
+                mano[i] = barajaAux[carta];
+            }
+            i = i+1;
+        }
+
+        return mano;
+    }
+    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length < 56 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < baraja.length);
     //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
     public static /*@ pure @*/ String[] repartirCartas(int[] indices, String[] baraja){
-        String[] mano = new String[2];
+        String[] mano = new String[indices.length];
         int i = 0;
         //@ maintaining 0 <= i && i <= mano.length;
         //@ decreases mano.length - i;
