@@ -156,27 +156,9 @@ public class Blackjack{
             int carta = (int) (Math.random() * barajaAux.length);
             //@ assume 0 <= carta && carta < barajaAux.length;
             mano[i] = barajaAux[carta];
-            barajaAux = eliminarCartaIndice(barajaAux, carta);
             i = i+1;
         }
         return mano;
-    }
-    //@ requires baraja.length > 0 && carta >= 0 && carta < baraja.length;
-    //@ ensures \result.length <= baraja.length;
-    public static /*@ pure @*/ int[] eliminarCartaIndice(int[] baraja, int carta){
-        int[] barajaAux = new int[baraja.length - 1];
-        int j = 0;
-        int i = 0;
-        //@ maintaining 0 <= i && i <= baraja.length && 0 <= j && j <= barajaAux.length;
-        //@ decreases baraja.length - i;
-        while(0 <= i && i < barajaAux.length){
-            if(i != carta && j < barajaAux.length && 0 <= j){
-                barajaAux[j] = baraja[i];
-                j++;
-            }
-            i = i+1;
-        }
-        return barajaAux;
     }
     //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length > 0 && indices.length <= baraja.length;
     //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
