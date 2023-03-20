@@ -33,6 +33,7 @@ public class Blackjack{
         int ganadas = 0;
         int perdidas = 0;
         int empates = 0;
+        int apuesta = 0;
 
         // Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
@@ -46,7 +47,7 @@ public class Blackjack{
             // Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
             System.out.print("Ingrese su apuesta: ");
-            int apuesta = RepartirCartasIniciales.pedirApuesta(creditos, lectura.nextInt());
+            apuesta = RepartirCartasIniciales.pedirApuesta(creditos, lectura.nextInt());
             // Validar apuesta, si es invalida pedir de nuevo
             while(apuesta == 0){
                 System.out.println("Apuesta invalida!");
@@ -77,9 +78,33 @@ public class Blackjack{
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
             manoCroupierValor = RepartirCartasIniciales.valorCartas(manoCroupier);
 
-            
-            juegos++;
+             // Turno del jugador
+            if(manoJugadorValor == 21){
+                AccionDelJugador.jugadorTieneBlackJack(manoJugadorValor);
+                creditos = creditos + apuesta + (apuesta * 3) / 2;
+                //Funcion de acabar juego
+            }else if(manoJugadorValor < 21){                
+                if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 3){
+                    if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
+                        apuesta = apuesta * 2;
+                    }else{
+                    System.out.println("No puede doblar!");
+                }                
+            }else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 2){
+                // Funcion de acabar turno                
+            }else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 1){
+                // Funcion de dar UNA carta                
+            }
+            else if(AccionDelJugador.jugadorNoTieneBlackJack(manoJugadorValor) == 4){
+                // Funcion de salir del juego
+            }
+        }else{
+            AccionDelJugador.jugadorTieneMasDe21(manoJugadorValor);
+       
+        juegos++;
         }
+    }
+        
         // Cerrar Scanner
         lectura.close();
         // Mostrar resultados y finalizar juego
@@ -91,3 +116,4 @@ public class Blackjack{
         System.out.println("Gracias por jugar!");
     }
 }
+
