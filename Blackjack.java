@@ -1,9 +1,10 @@
 // * Scanner para lectura de datos
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.io.Console;
 
 // ! Libreria para interfaz grafica
-// import java.awt.Font;
+import java.awt.Font;
 
 public class Blackjack{
     public static void main(String[] args){
@@ -40,14 +41,14 @@ public class Blackjack{
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
-            int[] manoJugador;
-            String[] manoJugadorString;
-            String[] tipoManoJugador;
+            int[] manoJugador = new int[21];
+            String[] manoJugadorString = new String[21];
+            String[] tipoManoJugador = new String[21];
             int manoJugadorValor = 0;
             int cartasJugador = 2;
-            int[] manoCroupier;
-            String[] manoCroupierString;
-            String[] tipoManoCroupier;
+            int[] manoCroupier = new int[21];
+            String[] manoCroupierString = new String[21];
+            String[] tipoManoCroupier = new String[21];
             int manoCroupierValor = 0;
             int cartasCroupier = 2;
             Boolean partidaContinua = true;
@@ -70,24 +71,24 @@ public class Blackjack{
 
             // * Repartir y mostrar cartas del jugador
             manoJugador = repartirCartasIndice(barajaIndex);
-            manoJugadorString = repartirCartas(manoJugador, baraja);
-            tipoManoJugador = repartirTipos(manoJugador, tipos);
+            manoJugadorString = repartirCartas(manoJugador, baraja, cartasJugador);
+            tipoManoJugador = repartirTipos(manoJugador, tipos, cartasJugador);
             System.out.print("Sus cartas son: ");
             System.out.print(manoJugadorString[0] + " de " + tipoManoJugador[0]);
             System.out.println(" y " + manoJugadorString[1] + " de " + tipoManoJugador[1]);
-            manoJugadorValor = valorCartas(manoJugador);
+            manoJugadorValor = valorCartas(manoJugador, cartasJugador);
 
             // * Repartir y mostrar cartas del croupier
             // ! Solo se muestra la primera carta del croupier
             manoCroupier = repartirCartasIndice(barajaIndex);
-            manoCroupierString = repartirCartas(manoCroupier, baraja);
-            tipoManoCroupier = repartirTipos(manoCroupier, tipos);
+            manoCroupierString = repartirCartas(manoCroupier, baraja, cartasCroupier);
+            tipoManoCroupier = repartirTipos(manoCroupier, tipos, cartasCroupier);
             System.out.print("La carta del croupier es: ");
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
-            manoCroupierValor = valorCartas(manoCroupier);
+            manoCroupierValor = valorCartas(manoCroupier, cartasCroupier);
 
-            // TODO: Mostrar cartas del jugador y primera del croupier
-            // mostrarCartas("Jugador", manoJugadorString, tipoManoJugador, 5, 30);
+            // ? Mostrar cartas del jugador y primera del croupier
+            mostrarCartas(nombre, manoJugadorString, tipoManoJugador, cartasJugador, 5, 30, manoCroupierString, tipoManoCroupier);
 
 
             // TODO: Agregar metodos para cada caso
@@ -114,7 +115,7 @@ public class Blackjack{
                         //agregarCartaAlMazo(manoJugador, barajaIndex);               
                     }
                     else if(noBlackJack == 4){                       
-                        System.out.println("Gracias por jugar!");
+                        continuar = false;
                         partidaContinua = false;
                     }
                     else{
@@ -126,16 +127,16 @@ public class Blackjack{
                 }
             }
                         
-        // Turno del croupier
+            // Turno del croupier
 
-        while(partidaContinua){
-            accionesDelCuprier(manoCroupierValor);
-            //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
-            if(manoCroupierValor > 21) {
-                System.out.println("El cuprier ha perdido!");
-                partidaContinua = false;                    
+            while(partidaContinua){
+                accionesDelCuprier(manoCroupierValor);
+                //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
+                if(manoCroupierValor > 21) {
+                    System.out.println("El cuprier ha perdido!");
+                    partidaContinua = false;                    
+                }
             }
-        }
             juegos++;
         }
         
@@ -166,29 +167,29 @@ public class Blackjack{
     //@ requires baraja.length > 0 && baraja.length <= 56;
     //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
     public static /*@ pure @*/ int[] repartirCartasIndice(int[] baraja){
-        int[] mano = new int[2];
-        int[] barajaAux = baraja;
+        int[] mano = new int[21];
+        int cartasInicial = 2;
         int i = 0;
-        //@ maintaining 0 <= i && i <= mano.length;
-        //@ decreases mano.length - i;
-        while(0 <= i && i < mano.length){
-            int carta = (int) (Math.random() * barajaAux.length);
-            //@ assume 0 <= carta && carta < barajaAux.length;
-            mano[i] = barajaAux[carta];
+        //@ maintaining 0 <= i && i <= cartasInicial;
+        //@ decreases cartasInicial - i;
+        while(0 <= i && i < cartasInicial){
+            int carta = (int) (Math.random() * baraja.length);
+            //@ assume 0 <= carta && carta < baraja.length;
+            mano[i] = baraja[carta];
             i = i+1;
         }
         return mano;
     }
-    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length > 0 && indices.length <= baraja.length;
+    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length > 0 && indices.length <= baraja.length && 2 <= numeroCartas && numeroCartas + 1 <= indices.length;
     //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
-    public static /*@ pure @*/ int[] agregarCartaAlMazo(int[] indices, int[] baraja){
-        int[] mano = new int[indices.length + 1];
+    public static /*@ pure @*/ int[] agregarCartaAlMazo(int[] indices, int[] baraja, int numeroCartas){
+        int[] mano = new int[21];
         int carta = (int) (Math.random() * baraja.length);
         int i = 0;
-        //@maintaining 0 <= i && i <= mano.length;
-        //@decreases mano.length - i;
-        while(0 <= i && i < mano.length){
-            if(i < indices.length){
+        //@maintaining 0 <= i && i <= numeroCartas + 1 && i <= mano.length;
+        //@decreases numeroCartas + 1 - i;
+        while(0 <= i && i < numeroCartas+1 && i < mano.length){
+            if(i < numeroCartas){
                 mano[i] = indices[i];
             }
             else{
@@ -200,41 +201,42 @@ public class Blackjack{
 
         return mano;
     }
-    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length < 56 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < baraja.length);
-    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
-    public static /*@ pure @*/ String[] repartirCartas(int[] indices, String[] baraja){
-        String[] mano = new String[indices.length];
+    //@ requires baraja.length > 0 && baraja.length <= 56 && indices.length <= 56 && 0 <= numeroCartas && numeroCartas <= indices.length && (\forall int i; 0 <= i && i < numeroCartas; indices[i] >= 0 && indices[i] < baraja.length);
+    //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
+    public static /*@ pure @*/ String[] repartirCartas(int[] indices, String[] baraja, int numeroCartas){
+        String[] mano = new String[21];
         int i = 0;
-        //@ maintaining 0 <= i && i <= mano.length;
-        //@ decreases mano.length - i;
-        while(0 <= i && i < mano.length){
+        //@ maintaining 0 <= i && i <= numeroCartas && i <= mano.length;
+        //@ decreases numeroCartas - i;
+        while(0 <= i && i < numeroCartas && i < mano.length){
             mano[i] = baraja[indices[i]];
             i = i+1;
         }
         return mano;
     }
-    //@ requires tipos.length == 4 && indices.length == 2 && (\forall int i; 0 <= i && i < indices.length; indices[i] >= 0 && indices[i] < tipos.length);
-    //@ ensures (\result.length == 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] != null);
-    public static /*@ pure @*/ String[] repartirTipos(int[] indices, String[] tipos){
-        String[] tipo = new String[2];
+    //@ requires tipos.length == 4 && indices.length >= 2 && indices.length <= 56 && 0 <= numeroCartas && numeroCartas <= indices.length && (\forall int i; 0 <= i && i < numeroCartas; indices[i] >= 0 && indices[i] < tipos.length);
+    //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < numeroCartas; \result[i] != null);
+    public static /*@ pure @*/ String[] repartirTipos(int[] indices, String[] tipos, int numeroCartas){
+        String[] mano = new String[21];
         int i = 0;
-        //@ maintaining 0 <= i && i <= tipo.length;
-        //@ decreases tipo.length - i;
-        while(0 <= i && i < tipo.length){
-            tipo[i] = tipos[indices[i]%4];
+        //@ maintaining 0 <= i && i <= numeroCartas && i <= mano.length;
+        //@ decreases numeroCartas - i;
+        while(0 <= i && i < numeroCartas && i < mano.length){
+            mano[i] = tipos[indices[i]%4];
             i = i+1;
         }
-        return tipo;
+        return mano;
     }
-    //
-    public static /*@ pure @*/ int valorCartas(int[] indices){
+    //@ requires indices.length >= 2 && indices.length <= 56 && numeroCartas >= 2 && numeroCartas <= indices.length && (\forall int i; 0 <= i && i < numeroCartas; indices[i] >= 0 && indices[i] < 56);
+    //@ ensures \result >= 0 <== (\forall int i; 0 <= i && i < numeroCartas; indices[i] >= 0 && indices[i] < 56);
+    public static /*@ pure @*/ int valorCartas(int[] indices, int numeroCartas){
         int valor = 0;
         int i = 0;
-        //@ maintaining 0 <= i && i <= indices.length;
-        //@ decreases indices.length - i;
-        while(0 <= i && i < indices.length){
+        //@ maintaining 0 <= i && i <= numeroCartas && i <= indices.length;
+        //@ decreases numeroCartas - i;
+        while(0 <= i && i < numeroCartas && i < indices.length){
             //@ assume 0 <= indices[i] && indices[i] < 56;
-            //@ assume 0 <= valor && valor < 22;
+            //@ assume 0 <= valor && valor + 11 < Integer.MAX_VALUE;
             if(indices[i] <= 35){
                 valor = valor + indices[i]/4 + 1;
             }
@@ -301,48 +303,81 @@ public class Blackjack{
             System.out.println("El cuprier ha perdido!");
         }
     }
-    // TODO: Interfaz grafica
-    // public static void mostrarCartas(String jugador, String[] baraja, String[] tipo, int xo, int yo){
-    //     int cartaA = 100;
-    //     int cartaL = 150;
-    //     int separacionCartas = 25;
+    // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
+    public static void pausarEjecucion(int segundos) {
+        try {
+            TimeUnit.SECONDS.sleep(segundos);
+        } catch(Exception e) {
+            System.out.println("Error pausando el programa.");
+        };
+    }
+    public static void mostrarCartas(String nombre, String[] barajaJugador, String[] tipoJugador, int numeroCartasJugador, int xo, int yo, String[] barajaCroupier, String[] tipoCroupier){
+        int cartaA = 100;
+        int cartaL = 150;
+        int separacionCartas = 25;
 
-    //     int lXO = xo + 7;
-    //     int ly = yo + 20;
+        int ly = yo + 20;
+        int ry = yo + 145;
+        int sy = yo + 90;
 
-    //     int rXO = xo + 78;
-    //     int ry = yo + 145;
+        MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
+        mt.configurarFuente("Serif", Font.BOLD, 18);
+        mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
 
-    //     int sXO = xo + 35;
-    //     int sy = yo + 90;
-
-    //     MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 400, "Mesa de Blackjack", Colores.LIGHT_GRAY);
-    //     mt.configurarFuente("Serif", Font.BOLD, 18);
-    //     mt.dibujarString(jugador, xo + 2, yo - 10, Colores.CYAN);
-
-    //     for(int i = 0; i < baraja.length; i++){
-    //         int x = xo + i*(cartaA + separacionCartas);
-    //         mt.dibujarRectanguloLleno(x, yo, cartaA, cartaL, Colores.WHITE);
-    //         if(tipo[i] == "♥" || tipo[i] == "♦") mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.RED);
-    //         else mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.BLACK);
+        for(int i = 0; i < barajaJugador.length && i < numeroCartasJugador; i++){
+            int x = xo + i*(cartaA + separacionCartas);
+            int lx = xo + 7 + i*(cartaA + separacionCartas);
+            int rx = xo + 75 + i*(cartaA + separacionCartas);
+            int sx = xo + 35 + i*(cartaA + separacionCartas);
             
-    //         int lx = lXO + i*(cartaA + separacionCartas);
-    //         int rx = rXO + i*(cartaA + separacionCartas);
-    //         int sx = sXO + i*(cartaA + separacionCartas);
-    //         mt.configurarFuente("Serif", Font.BOLD, 40);
-    //         if(tipo[i] == "♥" || tipo[i] == "♦") mt.dibujarString(tipo[i], sx, sy, Colores.RED);
-    //         else mt.dibujarString(tipo[i], sx, sy, Colores.BLACK);
-    //         mt.configurarFuente("Serif", Font.BOLD, 18);
-    //         if(tipo[i] == "♥" || tipo[i] == "♦"){
-    //             mt.dibujarString(baraja[i], lx, ly, Colores.RED);
-    //             mt.dibujarString(baraja[i], rx, ry, Colores.RED);
-    //         }
-    //         else{
-    //             mt.dibujarString(baraja[i], lx, ly, Colores.BLACK);
-    //             mt.dibujarString(baraja[i], rx, ry, Colores.BLACK);
-    //         };
-    //     }
-    //     mt.mostrar();
-    // }
+            mt.dibujarRectanguloLleno(x, yo, cartaA, cartaL, Colores.WHITE);
+            if(tipoJugador[i] == "♥" || tipoJugador[i] == "♦") mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.RED);
+            else mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.BLACK);
+            mt.configurarFuente("Serif", Font.BOLD, 40);
+            if(tipoJugador[i] == "♥" || tipoJugador[i] == "♦") mt.dibujarString(tipoJugador[i], sx, sy, Colores.RED);
+            else mt.dibujarString(tipoJugador[i], sx, sy, Colores.BLACK);
+            mt.configurarFuente("Serif", Font.BOLD, 18);
+            if(tipoJugador[i] == "♥" || tipoJugador[i] == "♦"){
+                mt.dibujarString(barajaJugador[i], lx, ly, Colores.RED);
+                mt.dibujarString(barajaJugador[i], rx, ry, Colores.RED);
+            }
+            else{
+                mt.dibujarString(barajaJugador[i], lx, ly, Colores.BLACK);
+                mt.dibujarString(barajaJugador[i], rx, ry, Colores.BLACK);
+            };
+        }
+
+        int yoCroupier = yo + 190;
+        int lx = xo + 7;
+        ly = yoCroupier + 20;
+
+        int rx = xo + 75;
+        ry = yoCroupier + 145;
+
+        int sx = xo + 35;
+        sy = yoCroupier + 90;
+        mt.configurarFuente("Serif", Font.BOLD, 18);
+        mt.dibujarString("Croupier", xo + 2, yoCroupier - 10, Colores.YELLOW);
+
+        mt.dibujarRectanguloLleno(xo, yoCroupier, cartaA, cartaL, Colores.WHITE);
+            if(tipoCroupier[0] == "♥" || tipoCroupier[0] == "♦") mt.dibujarRectangulo(xo, yoCroupier, cartaA, cartaL, Colores.RED);
+            else mt.dibujarRectangulo(xo, yoCroupier, cartaA, cartaL, Colores.BLACK);
+            mt.configurarFuente("Serif", Font.BOLD, 40);
+            if(tipoCroupier[0] == "♥" || tipoCroupier[0] == "♦") mt.dibujarString(tipoCroupier[0], sx, sy, Colores.RED);
+            else mt.dibujarString(tipoCroupier[0], sx, sy, Colores.BLACK);
+            mt.configurarFuente("Serif", Font.BOLD, 18);
+            if(tipoCroupier[0] == "♥" || tipoCroupier[0] == "♦"){
+                mt.dibujarString(barajaCroupier[0], lx, ly, Colores.RED);
+                mt.dibujarString(barajaCroupier[0], rx, ry, Colores.RED);
+            }
+            else{
+                mt.dibujarString(barajaCroupier[0], lx, ly, Colores.BLACK);
+                mt.dibujarString(barajaCroupier[0], rx, ry, Colores.BLACK);
+            };
+
+        mt.mostrar();
+        pausarEjecucion(15);
+        mt.terminar();
+    }
 }
 
