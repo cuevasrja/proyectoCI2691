@@ -1,4 +1,8 @@
+// * Scanner para lectura de datos
 import java.util.Scanner;
+
+// ! Libreria para interfaz grafica
+// import java.awt.Font;
 
 public class Blackjack{
     public static void main(String[] args){
@@ -20,7 +24,6 @@ public class Blackjack{
             "7", "8", "8", "8", "8", "9", "9", "9", "9", "10", "10", "10", "10", "J",
             "J", "J", "J", "Q", "Q", "Q", "Q", "K", "K", "K", "K", "★", "★", "★", "★"
         };
-        int[] resultado;
         int juegos = 0;
         int ganadas = 0;
         int perdidas = 0;
@@ -81,6 +84,10 @@ public class Blackjack{
             System.out.print("La carta del croupier es: ");
             System.out.println(manoCroupierString[0] + " de " + tipoManoCroupier[0]);
             manoCroupierValor = valorCartas(manoCroupier);
+
+            // TODO: Mostrar cartas del jugador y primera del croupier
+            // mostrarCartas("Jugador", manoJugadorString, tipoManoJugador, 5, 30);
+
 
             // TODO: Agregar metodos para cada caso
             while(partidaContinua){
@@ -281,5 +288,48 @@ public class Blackjack{
         System.out.println("Usted ha perdido esta mano");
         
     }
+    // TODO: Interfaz grafica
+    // public static void mostrarCartas(String jugador, String[] baraja, String[] tipo, int xo, int yo){
+    //     int cartaA = 100;
+    //     int cartaL = 150;
+    //     int separacionCartas = 25;
+
+    //     int lXO = xo + 7;
+    //     int ly = yo + 20;
+
+    //     int rXO = xo + 78;
+    //     int ry = yo + 145;
+
+    //     int sXO = xo + 35;
+    //     int sy = yo + 90;
+
+    //     MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 400, "Mesa de Blackjack", Colores.LIGHT_GRAY);
+    //     mt.configurarFuente("Serif", Font.BOLD, 18);
+    //     mt.dibujarString(jugador, xo + 2, yo - 10, Colores.CYAN);
+
+    //     for(int i = 0; i < baraja.length; i++){
+    //         int x = xo + i*(cartaA + separacionCartas);
+    //         mt.dibujarRectanguloLleno(x, yo, cartaA, cartaL, Colores.WHITE);
+    //         if(tipo[i] == "♥" || tipo[i] == "♦") mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.RED);
+    //         else mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.BLACK);
+            
+    //         int lx = lXO + i*(cartaA + separacionCartas);
+    //         int rx = rXO + i*(cartaA + separacionCartas);
+    //         int sx = sXO + i*(cartaA + separacionCartas);
+    //         mt.configurarFuente("Serif", Font.BOLD, 40);
+    //         if(tipo[i] == "♥" || tipo[i] == "♦") mt.dibujarString(tipo[i], sx, sy, Colores.RED);
+    //         else mt.dibujarString(tipo[i], sx, sy, Colores.BLACK);
+    //         mt.configurarFuente("Serif", Font.BOLD, 18);
+    //         if(tipo[i] == "♥" || tipo[i] == "♦"){
+    //             mt.dibujarString(baraja[i], lx, ly, Colores.RED);
+    //             mt.dibujarString(baraja[i], rx, ry, Colores.RED);
+    //         }
+    //         else{
+    //             mt.dibujarString(baraja[i], lx, ly, Colores.BLACK);
+    //             mt.dibujarString(baraja[i], rx, ry, Colores.BLACK);
+    //         };
+    //     }
+    //     mt.mostrar();
+    // }
 }
 
