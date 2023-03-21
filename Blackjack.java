@@ -171,31 +171,8 @@ public class Blackjack{
     //@ ensures (\result.length >= 2) <== (\forall int i; 0 <= i && i < \result.length; \result[i] >= 0 && \result[i] < 56);
     public static /*@ pure @*/ int[] agregarCartaAlMazo(int[] indices, int[] baraja){
         int[] mano = new int[indices.length + 1];
-        int[] barajaAux = new int[baraja.length - indices.length];
-        int carta = (int) (Math.random() * barajaAux.length);
+        int carta = (int) (Math.random() * baraja.length);
         int i = 0;
-        int j = 0;
-        //@ maintaining 0 <= i && i <= baraja.length && 0 <= j && j <= barajaAux.length;
-        //@ decreases baraja.length - i;
-        while(0 <= i && i < baraja.length && 0 <= j && j < barajaAux.length){
-            int k = 0;
-            boolean existe = false;
-            //@ maintaining 0 <= k && k <= indices.length;
-            //@ decreases indices.length - k;
-            while(0 <= k && k < indices.length && !existe){
-                if(baraja[i] == indices[k]){
-                    existe = true;
-                }
-                k++;
-            }
-            if(!existe){
-                barajaAux[j] = baraja[i];
-                j = j+1;
-            }
-            i = i+1;
-        }
-
-        i = 0;
         //@maintaining 0 <= i && i <= mano.length;
         //@decreases mano.length - i;
         while(0 <= i && i < mano.length){
@@ -203,8 +180,8 @@ public class Blackjack{
                 mano[i] = indices[i];
             }
             else{
-                //@ assume 0 <= carta && carta < barajaAux.length;
-                mano[i] = barajaAux[carta];
+                //@ assume 0 <= carta && carta < baraja.length;
+                mano[i] = baraja[carta];
             }
             i = i+1;
         }
