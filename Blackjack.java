@@ -1,5 +1,6 @@
 // * Scanner para lectura de datos
 import java.util.Scanner;
+import java.io.Console;
 
 // ! Libreria para interfaz grafica
 // import java.awt.Font;
@@ -91,14 +92,14 @@ public class Blackjack{
 
             // TODO: Agregar metodos para cada caso
             while(partidaContinua){
-                // ? Turno del jugador
                 if(manoJugadorValor == 21){
                     jugadorTieneBlackJack(manoJugadorValor);
                     creditos = creditos + apuesta + (apuesta * 3) / 2;
-                    // ? Funcion de acabar juego
+                    partidaContinua = false;
                 }
                 else if(manoJugadorValor < 21){                
-                    if(jugadorNoTieneBlackJack(manoJugadorValor) == 3){
+                    int noBlackJack = jugadorNoTieneBlackJack(manoJugadorValor);
+                    if(noBlackJack == 3){
                         if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                             apuesta = apuesta * 2;
                         }
@@ -106,14 +107,14 @@ public class Blackjack{
                             System.out.println("No puede doblar!");
                         }                
                     }
-                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 2){
+                    else if(noBlackJack == 2){
                         // ? Funcion de acabar turno                
                     }
-                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 1){
-                        // ? Funcion de dar UNA carta                
+                    else if(noBlackJack == 1){
+                        //agregarCartaAlMazo(manoJugador, barajaIndex);               
                     }
-                    else if(jugadorNoTieneBlackJack(manoJugadorValor) == 4){
-                        // ? Funcion de salir del juego
+                    else if(noBlackJack == 4){                       
+                        System.out.println("Gracias por jugar!");
                         partidaContinua = false;
                     }
                     else{
@@ -124,6 +125,17 @@ public class Blackjack{
                     jugadorTieneMasDe21(manoJugadorValor);
                 }
             }
+                        
+        // Turno del croupier
+
+        while(partidaContinua){
+            accionesDelCuprier(manoCroupierValor);
+            //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
+            if(manoCroupierValor > 21) {
+                System.out.println("El cuprier ha perdido!");
+                partidaContinua = false;                    
+            }
+        }
             juegos++;
         }
         
@@ -236,34 +248,58 @@ public class Blackjack{
         }
         return valor;
     }
-    public static void jugadorTieneBlackJack(int a) { 
-        System.out.println("BlackJack! Usted ha ganado.");        
-    } 
-
-    public static int jugadorNoTieneBlackJack(int a) {       
-        System.out.println("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");                   
-        Scanner opcion = new Scanner(System.in);
-        int decision = Integer.parseInt(opcion.nextLine());
-
-        int accion = 0;            
-        if (decision == 1){                     
-            accion = 1;                
-        }else if(decision == 2){                    
-            accion = 2;                
-        }else if(decision == 3){                    
-            accion = 3;                
-        }else if(decision == 4){                    
-            accion = 4;                
-        }else{
+    public static void jugadorTieneBlackJack(int a) {
+        System.out.println("BlackJack! Usted ha ganado.");
+    }
+    
+    /**
+    * @param a Requires: a >= 0
+    * @requires System.console() != null;
+    * @requires decision.matches("[1234]");
+    * @ensures accion == 0 || accion == 1 || accion == 2 || accion == 3 || accion == 4;
+    * @return  Ensures: \result == 0 || \result == 1 || \result == 2 || \result == 3 || \result == 4
+    */
+    public static int jugadorNoTieneBlackJack(int a) {
+        Console consola = System.console();
+        String decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+        int accion = 0;
+        if (decision.equals("1")) {
+            accion = 1;
+        } else if (decision.equals("2")) {
+            accion = 2;
+        } else if (decision.equals("3")) {
+            accion = 3;
+        } else if (decision.equals("4")) {
+            accion = 4;
+        } else {
             System.out.println("Error! debe introducir una de las opciones");
-        };            
-        opcion.close();
-        return accion;       
-        }   
-
-    public static void jugadorTieneMasDe21(int a) {                
+        }
+        return accion;
+    }
+    
+    /**
+    * @param a Requires: a >= 0
+    * @ensures true;
+    */
+    public static void jugadorTieneMasDe21(int a) {
         System.out.println("Usted ha perdido esta mano");
-        
+    }
+    
+    /**
+    * @param manoCroupierValor Requires: manoCroupierValor >= 1 && manoCroupierValor <= 31
+    * @ensures true;
+    */
+    public static void accionesDelCuprier(int manoCroupierValor) {
+        if(manoCroupierValor < 17) {
+            //agregarCartaAlMazo(manoCroupier, barajaIndex); 
+            //Actualizar
+        }
+        else if(manoCroupierValor >= 17 && manoCroupierValor <= 21) {
+            // No hace nada
+        }
+        else if(manoCroupierValor > 21) {
+            System.out.println("El cuprier ha perdido!");
+        }
     }
     // TODO: Interfaz grafica
     // public static void mostrarCartas(String jugador, String[] baraja, String[] tipo, int xo, int yo){
