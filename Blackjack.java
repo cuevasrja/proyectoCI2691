@@ -289,7 +289,7 @@ public class Blackjack{
         };
     }
     // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
-    //@ requires true;
+    //@ requires carta != null && numeroCarta >= 0 && xCarta >= 0 && yCarta >= 0 && mt != null;
     //@ ensures true;
     public static void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
         int cartaA = 100;
@@ -309,31 +309,39 @@ public class Blackjack{
         int sy = yCarta + 55;
         int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
         
-        if(cartaInfo[1] == "JOKER"){
-            rx = lx;
-            cartaInfo[1] = "Comodin";
-        }
-        else if(cartaInfo[1] == "10")rx = rx - 8;
-        else if(cartaInfo[1] == "J"){
+        if(cartaInfo[1].equals("JOKER"))rx = lx;
+        else if(cartaInfo[1].equals("10"))rx = rx - 8;
+        else if(cartaInfo[1].equals("J")){
             rx = rx + 8;
             ry = ry - 5;
         }
 
         mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.WHITE);
-        if(cartaInfo[0] == "CORAZONES" || cartaInfo[0] == "DIAMANTES") mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
+        if(cartaInfo[0].equals("CORAZONES") || cartaInfo[0].equals("DIAMANTES")) mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
         else mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.BLACK);
         mt.configurarFuente("Serif", Font.BOLD, 40);
-        
-        if(cartaInfo[0] == "DIAMANTES") mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
-        else if(cartaInfo[0] == "PICAS"){
+
+        if(cartaInfo[0].equals("DIAMANTES")) mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
+        else if(cartaInfo[0].equals("PICAS")){
             mt.dibujarPoligonoLleno(new int[]{sx + 40, sx + 20, sx}, new int[]{sy+10, sy-10, sy+10}, 3, Colores.BLACK);
             mt.dibujarOvaloLleno(sx - 5, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx + 15, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarPoligonoLleno(new int[]{sx + 10, sx + 20, sx + 30}, new int[]{sy+45, sy+30, sy+45}, 3, Colores.BLACK);
         }
+        else if(cartaInfo[0].equals("TREBOL")){
+            mt.dibujarOvaloLleno(sx-6, sy+7, 30, 30, Colores.BLACK);
+            mt.dibujarOvaloLleno(sx+16, sy+7, 30, 30, Colores.BLACK);
+            mt.dibujarOvaloLleno(sx+5, sy-15, 30, 30, Colores.BLACK);
+            mt.dibujarPoligonoLleno(new int[]{sx+5, sx+20, sx+35}, new int[]{sy+55,sy+25,sy+55}, 3, Colores.BLACK);
+        }
+        else{
+            mt.dibujarOvaloLleno(sx-5, sy-5, 30, 30, Colores.RED);
+            mt.dibujarOvaloLleno(sx+15, sy-5, 30, 30, Colores.RED);
+            mt.dibujarPoligonoLleno(new int[]{sx-1, sx+41, sx+20}, new int[]{sy+20,sy+20,sy+45}, 3, Colores.RED);
+        }
 
         mt.configurarFuente("Serif", Font.BOLD, 18);
-        if(cartaInfo[0] == "CORAZONES" || cartaInfo[0] == "DIAMANTES"){
+        if(cartaInfo[0].equals("CORAZONES") || cartaInfo[0].equals("DIAMANTES")){
             mt.dibujarString(cartaInfo[1], lx, ly, Colores.RED);
             mt.dibujarString(cartaInfo[1], rx, ry, Colores.RED);
         }
