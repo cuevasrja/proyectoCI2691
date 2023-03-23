@@ -309,7 +309,10 @@ public class Blackjack{
         int sy = yCarta + 55;
         int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
         
-        if(cartaInfo[1].equals("JOKER"))rx = lx;
+        if(cartaInfo[1].equals("JOKER")){
+            lx = lx + 8;
+            rx = lx;
+        }
         else if(cartaInfo[1].equals("10"))rx = rx - 8;
         else if(cartaInfo[1].equals("J")){
             rx = rx + 8;
