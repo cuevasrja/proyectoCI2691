@@ -82,7 +82,7 @@ public class Blackjack{
             System.out.print("La carta oculta del Croupier es: ");
             System.out.println(manoCroupier[0]);
 
-            // ? Mostrar cartas del jugador y primera del croupier
+            // * Mostrar cartas del jugador y primera del croupier
             mostrarCartas(nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
 
 
@@ -107,7 +107,10 @@ public class Blackjack{
                         // ? Funcion de acabar turno                
                     }
                     else if(noBlackJack == 1){
-                        //agregarCartaAlMazo(manoJugador, barajaIndex);               
+                        manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador);
+                        cartasJugador++;
+                        manoJugadorValor = valorCartas(manoJugador, cartasJugador);
+                        mostrarCartas(nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
                     }
                     else if(noBlackJack == 4){                       
                         continuar = false;
@@ -119,6 +122,7 @@ public class Blackjack{
                 }
                 else{
                     jugadorTieneMasDe21(manoJugadorValor);
+                    partidaContinua = false;
                 }
             }
                         
