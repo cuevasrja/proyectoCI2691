@@ -289,15 +289,62 @@ public class Blackjack{
         };
     }
     // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
-    public static void mostrarCartas(String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
+    //@ requires true;
+    //@ ensures true;
+    public static void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
         int cartaA = 100;
         int cartaL = 150;
         int separacionCartas = 25;
 
-        int ly = yo + 20;
-        int ry = yo + 145;
-        int sy = yo + 90;
+        String[] cartaInfo = carta.toString().split("_");
 
+        int x = xCarta + numeroCarta*(cartaA + separacionCartas);
+
+        int ly = yCarta + 20;
+        int lx = xCarta + 7 + numeroCarta*(cartaA + separacionCartas);
+
+        int ry = yCarta + 145;
+        int rx = xCarta + 75 + numeroCarta*(cartaA + separacionCartas);
+
+        int sy = yCarta + 55;
+        int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
+        
+        if(cartaInfo[1] == "JOKER"){
+            rx = lx;
+            cartaInfo[1] = "Comodin";
+        }
+        else if(cartaInfo[1] == "10")rx = rx - 8;
+        else if(cartaInfo[1] == "J"){
+            rx = rx + 8;
+            ry = ry - 5;
+        }
+
+        mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.WHITE);
+        if(cartaInfo[0] == "CORAZONES" || cartaInfo[0] == "DIAMANTES") mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
+        else mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.BLACK);
+        mt.configurarFuente("Serif", Font.BOLD, 40);
+        
+        if(cartaInfo[0] == "DIAMANTES") mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
+        else if(cartaInfo[0] == "PICAS"){
+            mt.dibujarPoligonoLleno(new int[]{sx + 40, sx + 20, sx}, new int[]{sy+10, sy-10, sy+10}, 3, Colores.BLACK);
+            mt.dibujarOvaloLleno(sx - 5, sy + 5, 30, 30, Colores.BLACK);
+            mt.dibujarOvaloLleno(sx + 15, sy + 5, 30, 30, Colores.BLACK);
+            mt.dibujarPoligonoLleno(new int[]{sx + 10, sx + 20, sx + 30}, new int[]{sy+45, sy+30, sy+45}, 3, Colores.BLACK);
+        }
+
+        mt.configurarFuente("Serif", Font.BOLD, 18);
+        if(cartaInfo[0] == "CORAZONES" || cartaInfo[0] == "DIAMANTES"){
+            mt.dibujarString(cartaInfo[1], lx, ly, Colores.RED);
+            mt.dibujarString(cartaInfo[1], rx, ry, Colores.RED);
+        }
+        else{
+            mt.dibujarString(cartaInfo[1], lx, ly, Colores.BLACK);
+            mt.dibujarString(cartaInfo[1], rx, ry, Colores.BLACK);
+        };
+    }
+    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 0 && xo >= 0 && yo >= 0 && barajaCroupier != null;
+    //@ ensures true;
+    public static void mostrarCartas(String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
         MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
         mt.configurarFuente("Serif", Font.BOLD, 18);
         mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
@@ -306,60 +353,15 @@ public class Blackjack{
 
 
         while(0 <= i && i < barajaJugador.length && i < numeroCartasJugador){
-            String[] carta = barajaJugador[i].toString().split("_");
-
-            int x = xo + i*(cartaA + separacionCartas);
-            int lx = xo + 7 + i*(cartaA + separacionCartas);
-            int rx = xo + 75 + i*(cartaA + separacionCartas);
-            int sx = xo + 35 + i*(cartaA + separacionCartas);
-            
-            mt.dibujarRectanguloLleno(x, yo, cartaA, cartaL, Colores.WHITE);
-            if(carta[0] == "CORAZONES" || carta[0] == "DIAMANTES") mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.RED);
-            else mt.dibujarRectangulo(x, yo, cartaA, cartaL, Colores.BLACK);
-            mt.configurarFuente("Serif", Font.BOLD, 40);
-            if(carta[0] == "CORAZONES" || carta[0] == "DIAMANTES") mt.dibujarString(carta[0], sx, sy, Colores.RED);
-            else mt.dibujarString(carta[0], sx, sy, Colores.BLACK);
-            mt.configurarFuente("Serif", Font.BOLD, 18);
-            if(carta[0] == "CORAZONES" || carta[0] == "DIAMANTES"){
-                mt.dibujarString(carta[1], lx, ly, Colores.RED);
-                mt.dibujarString(carta[1], rx, ry, Colores.RED);
-            }
-            else{
-                mt.dibujarString(carta[1], lx, ly, Colores.BLACK);
-                mt.dibujarString(carta[1], rx, ry, Colores.BLACK);
-            };
+            dibujarCarta(barajaJugador[i], i, xo, yo, mt);
             i++;
         }
 
         int yoCroupier = yo + 190;
-        int lx = xo + 7;
-        ly = yoCroupier + 20;
-
-        int rx = xo + 75;
-        ry = yoCroupier + 145;
-
-        int sx = xo + 35;
-        sy = yoCroupier + 90;
         mt.configurarFuente("Serif", Font.BOLD, 18);
         mt.dibujarString("Croupier", xo + 2, yoCroupier - 10, Colores.YELLOW);
 
-        String[] cartaCroupier = barajaCroupier[0].toString().split("_");
-
-        mt.dibujarRectanguloLleno(xo, yoCroupier, cartaA, cartaL, Colores.WHITE);
-            if(cartaCroupier[0] == "CORAZONES" || cartaCroupier[0] == "DIAMANTES") mt.dibujarRectangulo(xo, yoCroupier, cartaA, cartaL, Colores.RED);
-            else mt.dibujarRectangulo(xo, yoCroupier, cartaA, cartaL, Colores.BLACK);
-            mt.configurarFuente("Serif", Font.BOLD, 40);
-            if(cartaCroupier[0] == "CORAZONES" || cartaCroupier[0] == "DIAMANTES") mt.dibujarString(cartaCroupier[0], sx, sy, Colores.RED);
-            else mt.dibujarString(cartaCroupier[0], sx, sy, Colores.BLACK);
-            mt.configurarFuente("Serif", Font.BOLD, 18);
-            if(cartaCroupier[0] == "CORAZONES" || cartaCroupier[0] == "DIAMANTES"){
-                mt.dibujarString(cartaCroupier[1], lx, ly, Colores.RED);
-                mt.dibujarString(cartaCroupier[1], rx, ry, Colores.RED);
-            }
-            else{
-                mt.dibujarString(cartaCroupier[1], lx, ly, Colores.BLACK);
-                mt.dibujarString(cartaCroupier[1], rx, ry, Colores.BLACK);
-            };
+        dibujarCarta(barajaCroupier[0], 0, xo, yoCroupier, mt);
 
         mt.mostrar();
         pausarEjecucion(15);
