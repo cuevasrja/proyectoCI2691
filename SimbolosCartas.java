@@ -15,7 +15,7 @@ public class SimbolosCartas {
     
     public static void dibujarTrebol(MaquinaDeTrazados mt, int x, int y, int largo, int ancho, int radius) {
         int[] xPoints = {x - radius+20, x, x + radius -20, x};
-        int[] yPoints = {y+80, y - radius+102, y+80, y + radius};
+        int[] yPoints = {y+100, y - radius+100, y+100, y + radius};
         int nPoints = 3;
         mt.dibujarOvaloLleno(x-30, y-45, largo, ancho, Colores.BLACK);
         mt.dibujarOvaloLleno(x-60, y, largo, ancho, Colores.BLACK);
