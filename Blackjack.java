@@ -164,7 +164,7 @@ public class Blackjack{
         return apuesta;
     }
     //@ requires true;
-    //@ ensures (\result.length == 21) <== (\forall int i; 0 <= i && i < 2; \result[i].ordinal >= 0 && \result[i].ordinal < 56);
+    //@ ensures (\result.length == 21) <== (\forall int i; 0 <= i && i < 2; \result[i].ordinal() >= 0 && \result[i].ordinal() < 56);
     public static /*@ pure @*/ Carta[] repartirCartas(){
         Carta[] mano = new Carta[21];
         int cantidadCartas = Carta.values().length;
@@ -181,7 +181,7 @@ public class Blackjack{
         return mano;
     }
     //@ requires numeroCartas >= 0 && numeroCartas <= 21 && mano.length == 21;
-    //@ ensures (\result.length == mano.length) <== (\forall int i; 0 <= i && i < numeroCartas; \result[i].ordinal >= 0 && \result[i].ordinal < 56);
+    //@ ensures (\result.length == mano.length) <== (\forall int i; 0 <= i && i < numeroCartas; \result[i].ordinal() >= 0 && \result[i].ordinal() < 56);
     public static /*@ pure @*/ Carta[] agregarCartaAlMazo(int numeroCartas, Carta[] mano){
         Carta[] manoNueva = new Carta[mano.length];
         int cantidadCartas = Carta.values().length;
@@ -293,14 +293,40 @@ public class Blackjack{
         };
     }
     // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
-    //@ requires carta != null && numeroCarta >= 0 && xCarta >= 0 && yCarta >= 0 && mt != null;
+    //@ requires carta != null && carta.toString() != null;
+    //@ ensures \result != null && \result.length() > 0;
+    public static String buscarCarta(Carta carta){
+        String cartaInfo = "";
+        String[] cartasPosibles = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "JOKER"};
+        int indiceCartas = carta.ordinal()/4;
+        cartaInfo = cartasPosibles[indiceCartas];
+        return cartaInfo;
+    }
+    //@ requires carta != null;
+    //@ ensures (\result.length == 2);
+    public static int[] buscarCartaPosicion(Carta carta){
+        int[] posicion = new int[2];
+        int indiceCartas = carta.ordinal()/4;
+        int indiceTipo = carta.ordinal()%4;
+        posicion[1] = indiceCartas;
+        posicion[0] = indiceTipo;
+        return posicion;
+    }
+    //@ requires carta != null && numeroCarta >= 0 && mt != null;
     //@ ensures true;
     public static void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
         int cartaA = 100;
         int cartaL = 150;
         int separacionCartas = 25;
 
-        String[] cartaInfo = carta.toString().split("_");
+        String cartaInfo = buscarCarta(carta);
+        int[] cartaIndices = buscarCartaPosicion(carta);
+
+        //@ assume cartaA >= 0 && cartaL >= 0 && separacionCartas >= 0 && cartaIndices.length == 2;
+        //@ assume cartaIndices[0] >= 0 && cartaIndices[0] < 4 && cartaIndices[1] >= 0 && cartaIndices[1] < 14;
+        //@ assume xCarta + 150 + numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE;
+        //@ assume yCarta + 150 < Integer.MAX_VALUE;
+        //@ assume numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE && xCarta + 150 < Integer.MAX_VALUE;
 
         int x = xCarta + numeroCarta*(cartaA + separacionCartas);
 
@@ -312,68 +338,77 @@ public class Blackjack{
 
         int sy = yCarta + 55;
         int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
+
+        //@ assume x < Integer.MAX_VALUE && ly < Integer.MAX_VALUE && lx < Integer.MAX_VALUE && ry < Integer.MAX_VALUE && rx < Integer.MAX_VALUE && sy < Integer.MAX_VALUE && sx < Integer.MAX_VALUE; 
         
-        if(cartaInfo[1].equals("JOKER")){
+        if(cartaIndices[1] == 13){
             lx = lx + 8;
             rx = lx;
         }
-        else if(cartaInfo[1].equals("10"))rx = rx - 8;
-        else if(cartaInfo[1].equals("J")){
+        else if(cartaIndices[1] == 9)rx = rx - 8;
+        else if(cartaIndices[1] == 10){
             rx = rx + 8;
             ry = ry - 5;
         }
 
         mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.WHITE);
-        if(cartaInfo[0].equals("CORAZONES") || cartaInfo[0].equals("DIAMANTES")) mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
+        if(cartaIndices[0]%2 == 0) mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
         else mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.BLACK);
         mt.configurarFuente("Serif", Font.BOLD, 40);
 
-        if(cartaInfo[0].equals("DIAMANTES")) mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
-        else if(cartaInfo[0].equals("PICAS")){
+        //@ assume sx + 50 < Integer.MAX_VALUE && sy + 50 < Integer.MAX_VALUE;
+        //@ assume sx - 50 > Integer.MIN_VALUE && sy - 50 > Integer.MIN_VALUE;
+        if(cartaIndices[0] == 0){
+            mt.dibujarOvaloLleno(sx-5, sy-5, 30, 30, Colores.RED);
+            mt.dibujarOvaloLleno(sx+15, sy-5, 30, 30, Colores.RED);
+            mt.dibujarPoligonoLleno(new int[]{sx-1, sx+41, sx+20}, new int[]{sy+20,sy+20,sy+45}, 3, Colores.RED);
+        }
+        else if(cartaIndices[0] == 1){
             mt.dibujarPoligonoLleno(new int[]{sx + 40, sx + 20, sx}, new int[]{sy+10, sy-10, sy+10}, 3, Colores.BLACK);
             mt.dibujarOvaloLleno(sx - 5, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx + 15, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarPoligonoLleno(new int[]{sx + 10, sx + 20, sx + 30}, new int[]{sy+45, sy+30, sy+45}, 3, Colores.BLACK);
         }
-        else if(cartaInfo[0].equals("TREBOL")){
+        else if(cartaIndices[0] == 2) mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
+        else{
             mt.dibujarOvaloLleno(sx-6, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+16, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+5, sy-15, 30, 30, Colores.BLACK);
             mt.dibujarPoligonoLleno(new int[]{sx+5, sx+20, sx+35}, new int[]{sy+55,sy+25,sy+55}, 3, Colores.BLACK);
         }
-        else{
-            mt.dibujarOvaloLleno(sx-5, sy-5, 30, 30, Colores.RED);
-            mt.dibujarOvaloLleno(sx+15, sy-5, 30, 30, Colores.RED);
-            mt.dibujarPoligonoLleno(new int[]{sx-1, sx+41, sx+20}, new int[]{sy+20,sy+20,sy+45}, 3, Colores.RED);
-        }
 
         mt.configurarFuente("Serif", Font.BOLD, 18);
-        if(cartaInfo[0].equals("CORAZONES") || cartaInfo[0].equals("DIAMANTES")){
-            mt.dibujarString(cartaInfo[1], lx, ly, Colores.RED);
-            mt.dibujarString(cartaInfo[1], rx, ry, Colores.RED);
+        if(cartaIndices[0]%2 == 0){
+            mt.dibujarString(cartaInfo, lx, ly, Colores.RED);
+            mt.dibujarString(cartaInfo, rx, ry, Colores.RED);
         }
         else{
-            mt.dibujarString(cartaInfo[1], lx, ly, Colores.BLACK);
-            mt.dibujarString(cartaInfo[1], rx, ry, Colores.BLACK);
+            mt.dibujarString(cartaInfo, lx, ly, Colores.BLACK);
+            mt.dibujarString(cartaInfo, rx, ry, Colores.BLACK);
         };
     }
-    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 0 && xo >= 0 && yo >= 0 && barajaCroupier != null;
+    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2;
     //@ ensures true;
     public static void mostrarCartas(String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
         MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
         mt.configurarFuente("Serif", Font.BOLD, 18);
+        //@ assume xo + 10 < Integer.MAX_VALUE && yo - 10 > Integer.MIN_VALUE;
         mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
 
         int i = 0;
 
-
+        //@ maintaining 0 <= i && i <= barajaJugador.length && i <= numeroCartasJugador;
+        //@ decreasing barajaJugador.length - i;
         while(0 <= i && i < barajaJugador.length && i < numeroCartasJugador){
             dibujarCarta(barajaJugador[i], i, xo, yo, mt);
             i++;
         }
 
+        //@ assume yo + 190 < Integer.MAX_VALUE;
         int yoCroupier = yo + 190;
+
         mt.configurarFuente("Serif", Font.BOLD, 18);
+        //@ assume yoCroupier - 20 > Integer.MIN_VALUE;
         mt.dibujarString("Croupier", xo + 2, yoCroupier - 10, Colores.YELLOW);
 
         dibujarCarta(barajaCroupier[0], 0, xo, yoCroupier, mt);
