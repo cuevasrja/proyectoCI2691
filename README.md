@@ -12,10 +12,11 @@ Se verifico con prueba estatica usando el comando:
 `openjml --esc --exclude 'main,jugadorNoTieneBlackJack' -cp ./lib/maquinaTrazados-v0.1.jar Blackjack.java`
 
 Despues se realizo la prueba dinamica con el comando:
-
+<!-- TODO: No pasa la prueba dinamica -->
 `openjml --rac Blackjack.java`
 
 ## Probar con la libreria grafica
+<!-- !No compila con JML pero si con Java -->
 Para compilar el proyecto se uso el comando
 `openjml --compile -cp ./lib/maquinaTrazados-v0.1.jar Blackjack.java`
 

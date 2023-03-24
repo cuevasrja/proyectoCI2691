@@ -34,6 +34,7 @@ public class Blackjack{
         int perdidas = 0;
         int empates = 0;
         int apuesta = 0;
+        MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
 
         // * Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
@@ -83,7 +84,7 @@ public class Blackjack{
             System.out.println(manoCroupier[0]);
 
             // * Mostrar cartas del jugador y primera del croupier
-            mostrarCartas(nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
+            mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
 
 
             // TODO: Agregar metodos para cada caso
@@ -110,7 +111,7 @@ public class Blackjack{
                         manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador);
                         cartasJugador++;
                         manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-                        mostrarCartas(nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
+                        mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
                     }
                     else if(noBlackJack == 4){                       
                         continuar = false;
@@ -284,7 +285,7 @@ public class Blackjack{
     }
     
     //@ requires segundos >= 0;
-    //@ ensures true;
+    //@ ensures segundos >= 0;
     public static void pausarEjecucion(int segundos) {
         try {
             TimeUnit.SECONDS.sleep(segundos);
@@ -295,7 +296,7 @@ public class Blackjack{
     // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
     //@ requires carta != null && carta.toString() != null;
     //@ ensures \result != null && \result.length() > 0;
-    public static String buscarCarta(Carta carta){
+    public static /*@ pure @*/ String buscarCarta(Carta carta){
         String cartaInfo = "";
         String[] cartasPosibles = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "JOKER"};
         int indiceCartas = carta.ordinal()/4;
@@ -304,7 +305,7 @@ public class Blackjack{
     }
     //@ requires carta != null;
     //@ ensures (\result.length == 2);
-    public static int[] buscarCartaPosicion(Carta carta){
+    public static /*@ pure @*/ int[] buscarCartaPosicion(Carta carta){
         int[] posicion = new int[2];
         int indiceCartas = carta.ordinal()/4;
         int indiceTipo = carta.ordinal()%4;
@@ -314,20 +315,17 @@ public class Blackjack{
     }
     //@ requires carta != null && numeroCarta >= 0 && mt != null;
     //@ ensures true;
-    public static void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
+    public static /*@ pure @*/ void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
         int cartaA = 100;
         int cartaL = 150;
         int separacionCartas = 25;
 
         String cartaInfo = buscarCarta(carta);
         int[] cartaIndices = buscarCartaPosicion(carta);
-
-        //@ assume cartaA >= 0 && cartaL >= 0 && separacionCartas >= 0 && cartaIndices.length == 2;
-        //@ assume cartaIndices[0] >= 0 && cartaIndices[0] < 4 && cartaIndices[1] >= 0 && cartaIndices[1] < 14;
+        
+        //@ assume numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE && xCarta + 150 < Integer.MAX_VALUE;
         //@ assume xCarta + 150 + numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE;
         //@ assume yCarta + 150 < Integer.MAX_VALUE;
-        //@ assume numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE && xCarta + 150 < Integer.MAX_VALUE;
-
         int x = xCarta + numeroCarta*(cartaA + separacionCartas);
 
         int ly = yCarta + 20;
@@ -340,7 +338,7 @@ public class Blackjack{
         int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
 
         //@ assume x < Integer.MAX_VALUE && ly < Integer.MAX_VALUE && lx < Integer.MAX_VALUE && ry < Integer.MAX_VALUE && rx < Integer.MAX_VALUE && sy < Integer.MAX_VALUE && sx < Integer.MAX_VALUE; 
-        
+        //@ assume cartaIndices[1] >= 0 && cartaIndices[1] < 14;
         if(cartaIndices[1] == 13){
             lx = lx + 8;
             rx = lx;
@@ -350,7 +348,7 @@ public class Blackjack{
             rx = rx + 8;
             ry = ry - 5;
         }
-
+        //@ assume cartaIndices[0] >= 0 && cartaIndices[0] < 4;
         mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.WHITE);
         if(cartaIndices[0]%2 == 0) mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
         else mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.BLACK);
@@ -386,11 +384,12 @@ public class Blackjack{
             mt.dibujarString(cartaInfo, lx, ly, Colores.BLACK);
             mt.dibujarString(cartaInfo, rx, ry, Colores.BLACK);
         };
+        mt.mostrar();
     }
-    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2;
+    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2 && mt != null;
     //@ ensures true;
-    public static void mostrarCartas(String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
-        MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
+    public static void mostrarCartas(MaquinaDeTrazados mt, String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
+        
         mt.configurarFuente("Serif", Font.BOLD, 18);
         //@ assume xo + 10 < Integer.MAX_VALUE && yo - 10 > Integer.MIN_VALUE;
         mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
