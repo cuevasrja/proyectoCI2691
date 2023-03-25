@@ -6,25 +6,40 @@ import java.io.Console;
 // ! Libreria para interfaz grafica
 import java.awt.Font;
 
-enum Carta {
-    CORAZONES_A, PICAS_A, DIAMANTES_A, TREBOL_A, 
-    CORAZONES_2, PICAS_2, DIAMANTES_2, TREBOL_2,
-    CORAZONES_3, PICAS_3, DIAMANTES_3, TREBOL_3,
-    CORAZONES_4, PICAS_4, DIAMANTES_4, TREBOL_4,
-    CORAZONES_5, PICAS_5, DIAMANTES_5, TREBOL_5,
-    CORAZONES_6, PICAS_6, DIAMANTES_6, TREBOL_6,
-    CORAZONES_7, PICAS_7, DIAMANTES_7, TREBOL_7,
-    CORAZONES_8, PICAS_8, DIAMANTES_8, TREBOL_8,
-    CORAZONES_9, PICAS_9, DIAMANTES_9, TREBOL_9,
-    CORAZONES_10, PICAS_10, DIAMANTES_10, TREBOL_10,
-    CORAZONES_J, PICAS_J, DIAMANTES_J, TREBOL_J,
-    CORAZONES_Q, PICAS_Q, DIAMANTES_Q, TREBOL_Q,
-    CORAZONES_K, PICAS_K, DIAMANTES_K, TREBOL_K,
-    CORAZONES_JOKER, PICAS_JOKER, DIAMANTES_JOKER, TREBOL_JOKER
-}
-
 public class Blackjack{
+    enum Carta {
+        CORAZONES_A, PICAS_A, DIAMANTES_A, TREBOL_A, 
+        CORAZONES_2, PICAS_2, DIAMANTES_2, TREBOL_2,
+        CORAZONES_3, PICAS_3, DIAMANTES_3, TREBOL_3,
+        CORAZONES_4, PICAS_4, DIAMANTES_4, TREBOL_4,
+        CORAZONES_5, PICAS_5, DIAMANTES_5, TREBOL_5,
+        CORAZONES_6, PICAS_6, DIAMANTES_6, TREBOL_6,
+        CORAZONES_7, PICAS_7, DIAMANTES_7, TREBOL_7,
+        CORAZONES_8, PICAS_8, DIAMANTES_8, TREBOL_8,
+        CORAZONES_9, PICAS_9, DIAMANTES_9, TREBOL_9,
+        CORAZONES_10, PICAS_10, DIAMANTES_10, TREBOL_10,
+        CORAZONES_J, PICAS_J, DIAMANTES_J, TREBOL_J,
+        CORAZONES_Q, PICAS_Q, DIAMANTES_Q, TREBOL_Q,
+        CORAZONES_K, PICAS_K, DIAMANTES_K, TREBOL_K,
+        CORAZONES_JOKER, PICAS_JOKER, DIAMANTES_JOKER, TREBOL_JOKER;
+    }
     public static void main(String[] args){
+        Carta[] mazo = {
+            Carta.CORAZONES_A, Carta.PICAS_A, Carta.DIAMANTES_A, Carta.TREBOL_A, 
+            Carta.CORAZONES_2, Carta.PICAS_2, Carta.DIAMANTES_2, Carta.TREBOL_2,
+            Carta.CORAZONES_3, Carta.PICAS_3, Carta.DIAMANTES_3, Carta.TREBOL_3,
+            Carta.CORAZONES_4, Carta.PICAS_4, Carta.DIAMANTES_4, Carta.TREBOL_4,
+            Carta.CORAZONES_5, Carta.PICAS_5, Carta.DIAMANTES_5, Carta.TREBOL_5,
+            Carta.CORAZONES_6, Carta.PICAS_6, Carta.DIAMANTES_6, Carta.TREBOL_6,
+            Carta.CORAZONES_7, Carta.PICAS_7, Carta.DIAMANTES_7, Carta.TREBOL_7,
+            Carta.CORAZONES_8, Carta.PICAS_8, Carta.DIAMANTES_8, Carta.TREBOL_8,
+            Carta.CORAZONES_9, Carta.PICAS_9, Carta.DIAMANTES_9, Carta.TREBOL_9,
+            Carta.CORAZONES_10, Carta.PICAS_10, Carta.DIAMANTES_10, Carta.TREBOL_10,
+            Carta.CORAZONES_J, Carta.PICAS_J, Carta.DIAMANTES_J, Carta.TREBOL_J,
+            Carta.CORAZONES_Q, Carta.PICAS_Q, Carta.DIAMANTES_Q, Carta.TREBOL_Q,
+            Carta.CORAZONES_K, Carta.PICAS_K, Carta.DIAMANTES_K, Carta.TREBOL_K,
+            Carta.CORAZONES_JOKER, Carta.PICAS_JOKER, Carta.DIAMANTES_JOKER, Carta.TREBOL_JOKER
+        };
         int creditos = 100;
         boolean continuar = true;
         int juegosMax = 5;
@@ -70,7 +85,7 @@ public class Blackjack{
             System.out.println("Sus creditos restantes son: " + creditos);
 
             // * Repartir y mostrar cartas del jugador
-            manoJugador = repartirCartas();
+            manoJugador = repartirCartas(mazo);
             manoJugadorValor = valorCartas(manoJugador, cartasJugador);
             System.out.print("Sus cartas son: ");
             System.out.println(manoJugador[0] + " y " + manoJugador[1]);
@@ -78,7 +93,7 @@ public class Blackjack{
 
             // * Repartir y mostrar cartas del croupier
             // ! Solo se muestra la primera carta del croupier
-            manoCroupier = repartirCartas();
+            manoCroupier = repartirCartas(mazo);
             manoCroupierValor = valorCartas(manoCroupier, cartasCroupier);
             System.out.print("La carta oculta del Croupier es: ");
             System.out.println(manoCroupier[0]);
@@ -108,7 +123,7 @@ public class Blackjack{
                         // ? Funcion de acabar turno                
                     }
                     else if(noBlackJack == 1){
-                        manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador);
+                        manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
                         cartasJugador++;
                         manoJugadorValor = valorCartas(manoJugador, cartasJugador);
                         mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
@@ -164,40 +179,40 @@ public class Blackjack{
         }
         return apuesta;
     }
-    //@ requires true;
+    //@ requires mazo.length == 56;
     //@ ensures (\result.length == 21) <== (\forall int i; 0 <= i && i < 2; \result[i].ordinal() >= 0 && \result[i].ordinal() < 56);
-    public static /*@ pure @*/ Carta[] repartirCartas(){
+    public static /*@ pure @*/ Carta[] repartirCartas(Carta[] mazo){
         Carta[] mano = new Carta[21];
-        int cantidadCartas = Carta.values().length;
+        int cantidadCartas = mazo.length;
         int cartasInicial = 2;
         int i = 0;
-        //@ maintaining 0 <= i && i <= cartasInicial;
+        //@ maintaining 0 <= i && i <= cartasInicial && i <= mano.length && i <= mazo.length;
         //@ decreases cartasInicial - i;
-        while(0 <= i && i < cartasInicial && i < mano.length){
+        while(0 <= i && i < cartasInicial && i < mano.length && i < mazo.length){
             int carta = (int) (Math.random() * cantidadCartas);
             //@ assume 0 <= carta && carta < cantidadCartas;
-            mano[i] = Carta.values()[carta];
+            mano[i] = mazo[carta];
             i = i+1;
         }
         return mano;
     }
-    //@ requires numeroCartas >= 0 && numeroCartas <= 21 && mano.length == 21;
+    //@ requires numeroCartas >= 0 && numeroCartas < 21 && mano.length == 21 && mazo.length == 56;
     //@ ensures (\result.length == mano.length) <== (\forall int i; 0 <= i && i < numeroCartas; \result[i].ordinal() >= 0 && \result[i].ordinal() < 56);
-    public static /*@ pure @*/ Carta[] agregarCartaAlMazo(int numeroCartas, Carta[] mano){
+    public static /*@ pure @*/ Carta[] agregarCartaAlMazo(int numeroCartas, Carta[] mano, Carta[] mazo){
         Carta[] manoNueva = new Carta[mano.length];
-        int cantidadCartas = Carta.values().length;
+        int cantidadCartas = mazo.length;
         int carta = (int) (Math.random() * cantidadCartas);
         int i = 0;
-        //@maintaining 0 <= i && i <= numeroCartas + 1 && i <= manoNueva.length;
+        //@maintaining 0 <= i && i <= numeroCartas + 1 && i <= manoNueva.length && i <= mano.length && i <= mazo.length;
         //@decreases numeroCartas + 1 - i;
-        while(0 <= i && i < numeroCartas+1 && i < manoNueva.length){
+        while(0 <= i && i < numeroCartas+1 && i < manoNueva.length && i < mano.length && i < mazo.length){
             if(i < numeroCartas){
                 int indiceCarta = mano[i].ordinal();
-                manoNueva[i] = Carta.values()[indiceCarta];
+                manoNueva[i] = mazo[indiceCarta];
             }
             else{
                 //@ assume 0 <= carta && carta < cantidadCartas;
-                manoNueva[i] = Carta.values()[carta];
+                manoNueva[i] = mazo[carta];
             }
             i = i+1;
         }
