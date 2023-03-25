@@ -34,7 +34,6 @@ public class Blackjack{
         int perdidas = 0;
         int empates = 0;
         int apuesta = 0;
-        MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
 
         // * Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
@@ -45,6 +44,7 @@ public class Blackjack{
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
+            MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
             Carta[] manoJugador = new Carta[21];
             int manoJugadorValor = 0;
             int cartasJugador = 2;
