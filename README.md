@@ -9,7 +9,7 @@ Juego de Blackjack en Java
 ## Informacion sobre el proyecto
 Se verifico con prueba estatica usando el comando:
 
-`openjml --esc --exclude 'main,jugadorNoTieneBlackJack' -cp ./lib/maquinaTrazados-v0.1.jar Blackjack.java`
+`openjml --esc --exclude 'main' -cp ./lib/maquinaTrazados-v0.1.jar Blackjack.java`
 
 Despues se realizo la prueba dinamica con el comando:
 
