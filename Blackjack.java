@@ -113,6 +113,11 @@ public class Blackjack{
                 Console consola = System.console();               
                 String decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
                 int accion = Integer.parseInt(decision);
+                while(accion < 1 || accion > 4){
+                    System.out.println("Opcion Invalida");
+                    decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+                    accion = Integer.parseInt(decision);
+                }
                 if(accion == 3){
                     if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                         apuesta = apuesta * 2;
@@ -126,15 +131,14 @@ public class Blackjack{
                     // ? Funcion de acabar turno                
                 }
                 else if(accion == 1){                        
+                    manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
+                    cartasJugador++;
                     manoJugadorValor = valorCartas(manoJugador, cartasJugador);
                     mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
                 }
                 else if(accion == 4){                       
                     continuar = false;
                     partidaContinua = false;
-                }
-                else{
-                    System.out.println("Opcion Invalida");
                 }
             }
             else{
