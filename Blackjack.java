@@ -71,6 +71,7 @@ public class Blackjack{
             // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
             System.out.print("Ingrese su apuesta: ");
+            // * Leer apuesta, si es invalida retornar 0
             apuesta = pedirApuesta(creditos, lectura.nextInt());
             // * Validar apuesta, si es invalida pedir de nuevo
             while(apuesta == 0){
@@ -80,7 +81,7 @@ public class Blackjack{
             }
             // * Mostrar apuesta y restar creditos disponibles
             System.out.println("Apuesta: " + apuesta);
-            // TODO: Los creditos se restan al final de cada juego. Aun asi, se restan aqui para que el usuario no pueda apostar mas de lo que se tiene.
+            // TODO: Los creditos se restan al final de cada juego. Aun asi, se restan aqui con fines de prueba.
             creditos -= apuesta;
             System.out.println("Sus creditos restantes son: " + creditos);
 
@@ -104,47 +105,47 @@ public class Blackjack{
 
             // TODO: Agregar metodos para cada caso
             while(partidaContinua){
-            if(manoJugadorValor == 21){
-                jugadorTieneBlackJack(manoJugadorValor);
-                creditos = creditos + apuesta + (apuesta * 3) / 2;
-                partidaContinua = false;
-            }
-            else if(manoJugadorValor < 21){ 
-                Console consola = System.console();               
-                String decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
-                int accion = Integer.parseInt(decision);
-                while(accion < 1 || accion > 4){
-                    System.out.println("Opcion Invalida");
-                    decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
-                    accion = Integer.parseInt(decision);
-                }
-                if(accion == 3){
-                    if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
-                        apuesta = apuesta * 2;
-                        // Dar carta
-                    }
-                    else{
-                        System.out.println("No puede doblar!");
-                    }                
-                }
-                else if(accion == 2){
-                    // ? Funcion de acabar turno                
-                }
-                else if(accion == 1){                        
-                    manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
-                    cartasJugador++;
-                    manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-                    mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
-                }
-                else if(accion == 4){                       
-                    continuar = false;
+                if(manoJugadorValor == 21){
+                    jugadorTieneBlackJack(manoJugadorValor);
+                    creditos = creditos + apuesta + (apuesta * 3) / 2;
                     partidaContinua = false;
                 }
-            }
-            else{
-                jugadorTieneMasDe21(manoJugadorValor);
-                partidaContinua = false;
-            }
+                else if(manoJugadorValor < 21){ 
+                    Console consola = System.console();               
+                    String decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+                    int accion = Integer.parseInt(decision);
+                    while(accion < 1 || accion > 4){
+                        System.out.println("Opcion Invalida");
+                        decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+                        accion = Integer.parseInt(decision);
+                    }
+                    if(accion == 3){
+                        if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
+                            apuesta = apuesta * 2;
+                            // TODO: Dar carta
+                        }
+                        else{
+                            System.out.println("No puede doblar!");
+                        }                
+                    }
+                    else if(accion == 2){
+                        // TODO: Funcion de acabar turno                
+                    }
+                    else if(accion == 1){                        
+                        manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
+                        cartasJugador++;
+                        manoJugadorValor = valorCartas(manoJugador, cartasJugador);
+                        mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
+                    }
+                    else if(accion == 4){                       
+                        continuar = false;
+                        partidaContinua = false;
+                    }
+                }
+                else{
+                    jugadorTieneMasDe21(manoJugadorValor);
+                    partidaContinua = false;
+                }
             }  
             // Turno del croupier
 
@@ -175,10 +176,10 @@ public class Blackjack{
     public static /*@ pure @*/ int pedirApuesta(int creditos, int ap){
         int apuestaMin = 10;
         int apuesta = ap;
-        if(apuesta < apuestaMin){
+        if(apuesta < apuestaMin){ // * Si la apuesta es menor a 10
             apuesta = 0;
         }
-        else if(apuesta > creditos){ 
+        else if(apuesta > creditos){ // * Si la apuesta es mayor a los creditos
             apuesta = 0;
         }
         return apuesta;
@@ -193,6 +194,7 @@ public class Blackjack{
         //@ maintaining 0 <= i && i <= cartasInicial && i <= mano.length && i <= mazo.length;
         //@ decreases cartasInicial - i;
         while(0 <= i && i < cartasInicial && i < mano.length && i < mazo.length){
+            // * Seleccionar carta aleatoria y agregarla a la mano
             int carta = (int) (Math.random() * cantidadCartas);
             //@ assume 0 <= carta && carta < cantidadCartas;
             mano[i] = mazo[carta];
@@ -210,11 +212,11 @@ public class Blackjack{
         //@maintaining 0 <= i && i <= numeroCartas + 1 && i <= manoNueva.length && i <= mano.length && i <= mazo.length;
         //@decreases numeroCartas + 1 - i;
         while(0 <= i && i < numeroCartas+1 && i < manoNueva.length && i < mano.length && i < mazo.length){
-            if(i < numeroCartas){
+            if(i < numeroCartas){ // * Agregamos a la nueva mano las cartas que ya teniamos anteriormente
                 int indiceCarta = mano[i].ordinal();
                 manoNueva[i] = mazo[indiceCarta];
             }
-            else{
+            else{ // * Agregamos la nueva carta
                 //@ assume 0 <= carta && carta < cantidadCartas;
                 manoNueva[i] = mazo[carta];
             }
@@ -291,6 +293,7 @@ public class Blackjack{
     //@ ensures \result != null && \result.length() > 0;
     public static /*@ pure @*/ String buscarCarta(Carta carta){
         String cartaInfo = "";
+        // * Se divide entre 4 para obtener un numero entre 0 y 13, que son los indices de las cartas
         String[] cartasPosibles = {"A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "JOKER"};
         int indiceCartas = carta.ordinal()/4;
         cartaInfo = cartasPosibles[indiceCartas];
@@ -300,6 +303,7 @@ public class Blackjack{
     //@ ensures (\result.length == 2);
     public static /*@ pure @*/ int[] buscarCartaPosicion(Carta carta){
         int[] posicion = new int[2];
+        // * Se divide entre 4 para obtener el indice de la carta, y el resto para obtener el tipo de carta
         int indiceCartas = carta.ordinal()/4;
         int indiceTipo = carta.ordinal()%4;
         posicion[1] = indiceCartas;
@@ -309,8 +313,10 @@ public class Blackjack{
     //@ requires carta != null && numeroCarta >= 0 && mt != null;
     //@ ensures true;
     public static /*@ pure @*/ void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
+        // * Ancho y alto de la carta
         int cartaA = 100;
         int cartaL = 150;
+        // * Separacion entre cartas
         int separacionCartas = 25;
 
         String cartaInfo = buscarCarta(carta);
@@ -321,17 +327,19 @@ public class Blackjack{
         //@ assume yCarta + 150 < Integer.MAX_VALUE;
         int x = xCarta + numeroCarta*(cartaA + separacionCartas);
 
+        // * Posiciones (x,y) de las esquinas de la carta
         int ly = yCarta + 20;
         int lx = xCarta + 7 + numeroCarta*(cartaA + separacionCartas);
-
         int ry = yCarta + 145;
         int rx = xCarta + 75 + numeroCarta*(cartaA + separacionCartas);
 
+        // * Posiciones (x,y) del simbolo de la carta
         int sy = yCarta + 55;
         int sx = xCarta + 30 + numeroCarta*(cartaA + separacionCartas);
 
         //@ assume x < Integer.MAX_VALUE && ly < Integer.MAX_VALUE && lx < Integer.MAX_VALUE && ry < Integer.MAX_VALUE && rx < Integer.MAX_VALUE && sy < Integer.MAX_VALUE && sx < Integer.MAX_VALUE; 
         //@ assume cartaIndices[1] >= 0 && cartaIndices[1] < 14;
+        // * Casos particulares de las cartas
         if(cartaIndices[1] == 13){
             lx = lx + 8;
             rx = lx;
@@ -342,6 +350,7 @@ public class Blackjack{
             ry = ry - 5;
         }
         //@ assume cartaIndices[0] >= 0 && cartaIndices[0] < 4;
+        // * Dibujar fondo y marco de la carta
         mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.WHITE);
         if(cartaIndices[0]%2 == 0) mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.RED);
         else mt.dibujarRectangulo(x, yCarta, cartaA, cartaL, Colores.BLACK);
@@ -349,19 +358,20 @@ public class Blackjack{
 
         //@ assume sx + 50 < Integer.MAX_VALUE && sy + 50 < Integer.MAX_VALUE;
         //@ assume sx - 50 > Integer.MIN_VALUE && sy - 50 > Integer.MIN_VALUE;
-        if(cartaIndices[0] == 0){
+        if(cartaIndices[0] == 0){ // * Dibuja el corazon en la carta
             mt.dibujarOvaloLleno(sx-5, sy-5, 30, 30, Colores.RED);
             mt.dibujarOvaloLleno(sx+15, sy-5, 30, 30, Colores.RED);
             mt.dibujarPoligonoLleno(new int[]{sx-1, sx+41, sx+20}, new int[]{sy+20,sy+20,sy+45}, 3, Colores.RED);
         }
-        else if(cartaIndices[0] == 1){
+        else if(cartaIndices[0] == 1){ // * Dibuja el picas en la carta
             mt.dibujarPoligonoLleno(new int[]{sx + 40, sx + 20, sx}, new int[]{sy+10, sy-10, sy+10}, 3, Colores.BLACK);
             mt.dibujarOvaloLleno(sx - 5, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx + 15, sy + 5, 30, 30, Colores.BLACK);
             mt.dibujarPoligonoLleno(new int[]{sx + 10, sx + 20, sx + 30}, new int[]{sy+45, sy+30, sy+45}, 3, Colores.BLACK);
         }
-        else if(cartaIndices[0] == 2) mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
-        else{
+        else if(cartaIndices[0] == 2) // * Dibuja el diamante en la carta
+            mt.dibujarPoligonoLleno(new int[]{sx + 20, sx + 40, sx + 20, sx}, new int[]{sy, sy+20, sy+40, sy+20}, 4, Colores.RED);
+        else{ // * Dibuja el trebol en la carta
             mt.dibujarOvaloLleno(sx-6, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+16, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+5, sy-15, 30, 30, Colores.BLACK);
@@ -369,11 +379,11 @@ public class Blackjack{
         }
 
         mt.configurarFuente("Serif", Font.BOLD, 18);
-        if(cartaIndices[0]%2 == 0){
+        if(cartaIndices[0]%2 == 0){ // * Color rojo si es diamantes o corazones
             mt.dibujarString(cartaInfo, lx, ly, Colores.RED);
             mt.dibujarString(cartaInfo, rx, ry, Colores.RED);
         }
-        else{
+        else{ // * Color negro si es picas o trebol
             mt.dibujarString(cartaInfo, lx, ly, Colores.BLACK);
             mt.dibujarString(cartaInfo, rx, ry, Colores.BLACK);
         };
@@ -385,6 +395,7 @@ public class Blackjack{
         
         mt.configurarFuente("Serif", Font.BOLD, 18);
         //@ assume xo + 10 < Integer.MAX_VALUE && yo - 10 > Integer.MIN_VALUE;
+        // * Mostrar las cartas del jugador
         mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
 
         int i = 0;
@@ -396,6 +407,7 @@ public class Blackjack{
             i++;
         }
 
+        // * Mostrar las cartas del croupier
         //@ assume yo + 190 < Integer.MAX_VALUE;
         int yoCroupier = yo + 190;
 
@@ -406,7 +418,9 @@ public class Blackjack{
         dibujarCarta(barajaCroupier[0], 0, xo, yoCroupier, mt);
 
         mt.mostrar();
-        pausarEjecucion(15);
+        // * Pausar la ejecucion por 10 segundos
+        pausarEjecucion(10);
+        // * Cerrar la ventana
         mt.terminar();
     }
 }
