@@ -47,8 +47,6 @@ public class Blackjack{
         int juegos = 0;
         int ganadas = 0;
         int perdidas = 0;
-        int empates = 0;
-        int apuesta = 0;
 
         // * Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
@@ -59,7 +57,7 @@ public class Blackjack{
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
-            MaquinaDeTrazados mt = new MaquinaDeTrazados(800, 500, "Mesa de Blackjack", Colores.LIGHT_GRAY);
+            MaquinaDeTrazados mt = new MaquinaDeTrazados(1350, 700, "Mesa de Blackjack", Colores.LIGHT_GRAY);
             Carta[] manoJugador = new Carta[21];
             int manoJugadorValor = 0;
             int cartasJugador = 2;
@@ -67,16 +65,18 @@ public class Blackjack{
             int manoCroupierValor = 0;
             int cartasCroupier = 2;
             Boolean partidaContinua = true;
+            int apuesta = 0;
+            int xInicial = mt.XMAX/2 - cartasJugador*50;
 
             // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
-            System.out.print("Ingrese su apuesta: ");
+            System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a " + apuestaMin + ": ");
             // * Leer apuesta, si es invalida retornar 0
             apuesta = pedirApuesta(creditos, lectura.nextInt());
             // * Validar apuesta, si es invalida pedir de nuevo
             while(apuesta == 0){
                 System.out.println("Apuesta invalida!");
-                System.out.print("Ingrese su apuesta: ");
+                System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a " + apuestaMin + ": ");
                 apuesta = pedirApuesta(creditos, lectura.nextInt());
             }
             // * Mostrar apuesta y restar creditos disponibles
@@ -88,19 +88,16 @@ public class Blackjack{
             // * Repartir y mostrar cartas del jugador
             manoJugador = repartirCartas(mazo);
             manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-            System.out.print("Sus cartas son: ");
-            System.out.println(manoJugador[0] + " y " + manoJugador[1]);
-
 
             // * Repartir y mostrar cartas del croupier
             // ! Solo se muestra la primera carta del croupier
             manoCroupier = repartirCartas(mazo);
             manoCroupierValor = valorCartas(manoCroupier, cartasCroupier);
-            System.out.print("La carta oculta del Croupier es: ");
-            System.out.println(manoCroupier[0]);
 
             // * Mostrar cartas del jugador y primera del croupier
-            mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
+            System.out.println("Preparando mesa...");
+            System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
+            mostrarCartas(mt, nombre, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
 
 
             // TODO: Agregar metodos para cada caso
@@ -108,6 +105,7 @@ public class Blackjack{
                 if(manoJugadorValor == 21){
                     jugadorTieneBlackJack(manoJugadorValor);
                     creditos = creditos + apuesta + (apuesta * 3) / 2;
+                    ganadas++;
                     partidaContinua = false;
                 }
                 else if(manoJugadorValor < 21){ 
@@ -134,8 +132,9 @@ public class Blackjack{
                     else if(accion == 1){                        
                         manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
                         cartasJugador++;
+                        xInicial = mt.XMAX/2 - cartasJugador*50;
                         manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-                        mostrarCartas(mt, nombre, manoJugador, cartasJugador, 5, 30, manoCroupier);
+                        mostrarCartas(mt, nombre, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
                     }
                     else if(accion == 4){                       
                         continuar = false;
@@ -144,30 +143,35 @@ public class Blackjack{
                 }
                 else{
                     jugadorTieneMasDe21(manoJugadorValor);
+                    perdidas++;
                     partidaContinua = false;
-                }
-            }  
-            // Turno del croupier
+                }  
+                // Turno del croupier
 
-            while(partidaContinua){
                 accionesDelCuprier(manoCroupierValor);
                 //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
                 if(manoCroupierValor > 21) {
                     System.out.println("El cuprier ha perdido!");
+                    ganadas++;
                     partidaContinua = false;                    
                 }
             }
             juegos++;
         }
+        if(juegos == juegosMax){
+            System.out.println("Se ha alcanzado el numero maximo de juegos!");
+        }
+        else if(creditos < apuestaMin){
+            System.out.println("No tiene suficientes creditos para continuar!");
+        }
         
         // * Cerrar Scanner
         lectura.close();
-        // Mostrar resultados y finalizar juego
-        // System.out.println("Juegos jugados: " + juegos + " de " + juegosMax);
-        // System.out.println("Juegos ganados: " + ganadas);
-        // System.out.println("Juegos perdidos: " + perdidas);
-        // System.out.println("Juegos empatados: " + empates);
-        // System.out.println("Creditos restantes: " + creditos);
+        // * Mostrar resultados y finalizar juego
+        System.out.println("Juegos jugados: " + juegos + " de " + juegosMax);
+        System.out.println("Juegos ganados: " + ganadas);
+        System.out.println("Juegos perdidos: " + perdidas);
+        System.out.println("Creditos restantes: " + creditos);
         System.out.println("Gracias por jugar!");
     }
 
@@ -288,7 +292,6 @@ public class Blackjack{
             System.out.println("Error pausando el programa.");
         };
     }
-    // ! Las siguientes funciones no se toman en cuenta para la verificacion estatica
     //@ requires carta != null && carta.toString() != null;
     //@ ensures \result != null && \result.length() > 0;
     public static /*@ pure @*/ String buscarCarta(Carta carta){
@@ -311,7 +314,7 @@ public class Blackjack{
         return posicion;
     }
     //@ requires carta != null && numeroCarta >= 0 && mt != null;
-    //@ ensures true;
+    //@ ensures mt != null;
     public static /*@ pure @*/ void dibujarCarta(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
         // * Ancho y alto de la carta
         int cartaA = 100;
@@ -389,14 +392,56 @@ public class Blackjack{
         };
         mt.mostrar();
     }
-    //@ requires nombre != null && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2 && mt != null;
-    //@ ensures true;
-    public static void mostrarCartas(MaquinaDeTrazados mt, String nombre, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier){
+    //@ requires carta != null && numeroCarta >= 0 && mt != null;
+    //@ ensures mt != null;
+    public static void dibujarCartaVolteada(Carta carta, int numeroCarta, int xCarta, int yCarta, MaquinaDeTrazados mt){
+        // * Ancho y alto de la carta
+        int cartaA = 100;
+        int cartaL = 150;
+        // * Separacion entre cartas
+        int separacionCartas = 25;
+        
+        //@ assume numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE && xCarta + 150 < Integer.MAX_VALUE;
+        //@ assume xCarta + 150 + numeroCarta*(cartaA + separacionCartas) < Integer.MAX_VALUE;
+        //@ assume yCarta + 150 < Integer.MAX_VALUE;
+        int x = xCarta + numeroCarta*(cartaA + separacionCartas);
+
+        //@ assume x + 20 < Integer.MAX_VALUE && yCarta + 20 < Integer.MAX_VALUE;
+        int xMarco = x + 20;
+        int yMarco = yCarta + 20;
+        //@ assume cartaA - 40 > 0 && cartaL - 40 > 0;
+        int marcoA = cartaA - 40;
+        int marcoL = cartaL - 40;
+        mt.dibujarRectanguloLleno(x, yCarta, cartaA, cartaL, Colores.BLACK);
+        mt.dibujarRectangulo(xMarco, yMarco, marcoA, marcoL, Colores.CYAN);
+        //@ assume xMarco + 40 < Integer.MAX_VALUE && yMarco + 40 < Integer.MAX_VALUE;
+        //@ assume marcoA - 80 > 0 && marcoL - 80 > 0;
+        mt.dibujarRectanguloLleno(xMarco + 5, yMarco + 5, marcoA - 10, marcoL - 10, Colores.BLACK);
+        mt.dibujarRectangulo(xMarco + 10, yMarco + 10, marcoA - 20, marcoL - 20, Colores.CYAN);
+        mt.dibujarRectanguloLleno(xMarco + 15, yMarco + 15, marcoA - 30, marcoL - 30, Colores.BLACK);
+        mt.dibujarRectangulo(xMarco + 20, yMarco + 20, marcoA - 40, marcoL - 40, Colores.CYAN);
+        mt.dibujarRectanguloLleno(xMarco + 25, yMarco + 25, marcoA - 50, marcoL - 50, Colores.BLACK);
+        mt.dibujarRectangulo(xMarco + 30, yMarco + 30, marcoA - 60, marcoL - 60, Colores.CYAN);
+        mt.dibujarRectanguloLleno(xMarco + 35, yMarco + 35, marcoA - 70, marcoL - 70, Colores.BLACK);
+        mt.dibujarRectangulo(xMarco + 40, yMarco + 40, marcoA - 80, marcoL - 80, Colores.CYAN);        
+    }
+    //@ requires nombre != null && apuesta >= 10 && creditos > 0 && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2 && mt != null && numeroCartasCroupier >= 2;
+    //@ ensures mt != null;
+    public static void mostrarCartas(MaquinaDeTrazados mt, String nombre, int apuesta, int creditos, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier, int numeroCartasCroupier){
+        // * Limpiar la pantalla
+        mt.limpiar();
+
+        // * Dibujar mesa
+        //@ assume -mt.YMAX > Integer.MIN_VALUE && mt.XMAX < Integer.MAX_VALUE;
+        //@ assume 2*mt.YMAX < Integer.MAX_VALUE;
+        //@ assume mt.XMAX - 30 > 0;
+        mt.dibujarOvaloLleno(0, -mt.YMAX, mt.XMAX-30, 2*mt.YMAX, Colores.GREEN);
+        mt.dibujarOvalo(0, -mt.YMAX, mt.XMAX-30, 2*mt.YMAX, Colores.BLACK);
         
         mt.configurarFuente("Serif", Font.BOLD, 18);
         //@ assume xo + 10 < Integer.MAX_VALUE && yo - 10 > Integer.MIN_VALUE;
         // * Mostrar las cartas del jugador
-        mt.dibujarString(nombre, xo + 2, yo - 10, Colores.CYAN);
+        mt.dibujarString(nombre, xo + 2, yo - 10, Colores.BLUE);
 
         int i = 0;
 
@@ -413,9 +458,28 @@ public class Blackjack{
 
         mt.configurarFuente("Serif", Font.BOLD, 18);
         //@ assume yoCroupier - 20 > Integer.MIN_VALUE;
-        mt.dibujarString("Croupier", xo + 2, yoCroupier - 10, Colores.YELLOW);
+        mt.dibujarString("Croupier", xo + 2, yoCroupier - 10, Colores.RED);
 
-        dibujarCarta(barajaCroupier[0], 0, xo, yoCroupier, mt);
+        int j = 0;
+        //@ maintaining 0 <= j && j <= barajaCroupier.length && j <= numeroCartasCroupier;
+        //@ decreasing barajaCroupier.length - j;
+        while(0 <= j && j < barajaCroupier.length && j < numeroCartasCroupier){
+            if(j == 0)
+                dibujarCarta(barajaCroupier[j], j, xo, yoCroupier, mt);
+            else
+                dibujarCartaVolteada(barajaCroupier[j], j, xo, yoCroupier, mt);
+            j++;
+        }
+
+        //@ assume yoCroupier + 190 < Integer.MAX_VALUE && mt.XMAX/2 - 50 < Integer.MAX_VALUE && mt.XMAX/2 - 50 > 0;
+        int yApuesta = yoCroupier + 190;
+        int xApuesta = mt.XMAX/2 - 50;
+        mt.dibujarString("Apuesta: " + apuesta, xApuesta, yApuesta, Colores.WHITE);
+
+        //@ assume yApuesta + 20 < Integer.MAX_VALUE && mt.XMAX/2 - 50 < Integer.MAX_VALUE && mt.XMAX/2 - 50 > 0;
+        int yCreditos = yApuesta + 20;
+        int xCreditos = mt.XMAX/2 - 50;
+        mt.dibujarString("Creditos: " + creditos, xCreditos, yCreditos, Colores.WHITE);
 
         mt.mostrar();
         // * Pausar la ejecucion por 10 segundos
