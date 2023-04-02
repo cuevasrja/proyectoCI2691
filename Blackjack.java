@@ -58,7 +58,7 @@ public class Blackjack{
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
-            MaquinaDeTrazados mt = new MaquinaDeTrazados(1350, 700, "Mesa de Blackjack", Colores.LIGHT_GRAY);
+            MaquinaDeTrazados mt = new MaquinaDeTrazados(1400, 750, "Mesa de Blackjack", Colores.LIGHT_GRAY);
             Carta[] manoJugador = new Carta[21];
             int manoJugadorValor = 0;
             int cartasJugador = 2;
@@ -451,11 +451,16 @@ public class Blackjack{
         mt.limpiar();
 
         // * Dibujar mesa
-        //@ assume -mt.YMAX > Integer.MIN_VALUE && mt.XMAX < Integer.MAX_VALUE;
-        //@ assume 2*mt.YMAX < Integer.MAX_VALUE;
-        //@ assume mt.XMAX - 30 > 0;
-        mt.dibujarOvaloLleno(0, -mt.YMAX, mt.XMAX-30, 2*mt.YMAX, Colores.GREEN);
-        mt.dibujarOvalo(0, -mt.YMAX, mt.XMAX-30, 2*mt.YMAX, Colores.BLACK);
+        int anchoPantalla = mt.XMAX;
+        int altoPantalla = mt.YMAX;
+        //@ assume -1*altoPantalla > Integer.MIN_VALUE && -1*altoPantalla < Integer.MAX_VALUE;
+        //@ assume 2*altoPantalla < Integer.MAX_VALUE && 2*altoPantalla > Integer.MIN_VALUE;
+        //@ assume anchoPantalla - 30 > 0;
+        int yMesa = -1*altoPantalla;
+        int anchoMesa = anchoPantalla - 30;
+        int altoMesa = 2*altoPantalla;
+        mt.dibujarOvaloLleno(0, yMesa, anchoMesa, altoMesa, Colores.GREEN);
+        mt.dibujarOvalo(0, yMesa, anchoMesa, altoMesa, Colores.BLACK);
         
         mt.configurarFuente("Serif", Font.BOLD, 18);
         //@ assume xo + 10 < Integer.MAX_VALUE && yo - 10 > Integer.MIN_VALUE;
