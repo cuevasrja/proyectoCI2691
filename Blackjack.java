@@ -62,7 +62,7 @@ public class Blackjack{
             Carta[] manoJugador = new Carta[21];
             int manoJugadorValor = 0;
             int cartasJugador = 2;
-            Carta[] manoCroupier = new Carta[21];
+            Carta[] manoCroupier = new Carta[17];
             int manoCroupierValor = 0;
             int cartasCroupier = 2;
             Boolean partidaContinua = true;
@@ -204,7 +204,7 @@ public class Blackjack{
         }
         return apuesta;
     }
-    //@ requires mazo.length == 56 && mano.length == 21;
+    //@ requires mazo.length == 56 && (mano.length == 21 || mano.length == 17);
     //@ ensures (\forall int a; 0 <= a && a < mano.length; mano[a] != null <== (\exists int b; 0 <= b && b < mazo.length; mazo[b] == mano[a]));
     public static void repartirCartas(Carta[] mazo, Carta[] mano){
         int cantidadCartas = mazo.length;
@@ -220,7 +220,7 @@ public class Blackjack{
             i = i+1;
         }
     }
-    //@ requires numeroCartas >= 0 && numeroCartas < 21 && mano.length == 21 && mazo.length == 56;
+    //@ requires numeroCartas >= 0 && numeroCartas < 21 && (mano.length == 21 || mano.length == 17) && mazo.length == 56;
     //@ ensures (\forall int i; 0 <= i && i < numeroCartas+1; mano[i].ordinal() >= 0 && mano[i].ordinal() < 56) ==> mano[numeroCartas].ordinal() >= 0 && mano[numeroCartas].ordinal() < 56;
     public static void agregarCartaAlMazo(int numeroCartas, Carta[] mano, Carta[] mazo){
         int cantidadCartas = mazo.length;
