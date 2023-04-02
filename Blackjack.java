@@ -97,7 +97,7 @@ public class Blackjack{
             // * Mostrar cartas del jugador y primera del croupier
             System.out.println("Preparando mesa...");
             System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
-            mostrarCartas(mt, nombre, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
+            mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
 
 
             // TODO: Agregar metodos para cada caso
@@ -134,7 +134,6 @@ public class Blackjack{
                         cartasJugador++;
                         xInicial = mt.XMAX/2 - cartasJugador*50;
                         manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-                        mostrarCartas(mt, nombre, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
                     }
                     else if(accion == 4){                       
                         continuar = false;
@@ -147,13 +146,15 @@ public class Blackjack{
                     partidaContinua = false;
                 }  
                 // Turno del croupier
-
-                accionesDelCuprier(manoCroupierValor);
-                //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
-                if(manoCroupierValor > 21) {
-                    System.out.println("El cuprier ha perdido!");
-                    ganadas++;
-                    partidaContinua = false;                    
+                if(partidaContinua){
+                    accionesDelCuprier(manoCroupierValor);
+                    //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
+                    if(manoCroupierValor > 21) {
+                        System.out.println("El cuprier ha perdido!");
+                        ganadas++;
+                        partidaContinua = false;                    
+                    }
+                    mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
                 }
             }
             juegos++;
@@ -168,7 +169,7 @@ public class Blackjack{
         // * Cerrar Scanner
         lectura.close();
         // * Mostrar resultados y finalizar juego
-        System.out.println("Juegos jugados: " + juegos + " de " + juegosMax);
+        System.out.println("Juegos totales: " + juegos + " de " + juegosMax);
         System.out.println("Juegos ganados: " + ganadas);
         System.out.println("Juegos perdidos: " + perdidas);
         System.out.println("Creditos restantes: " + creditos);
@@ -427,7 +428,7 @@ public class Blackjack{
     }
     //@ requires nombre != null && apuesta >= 10 && creditos > 0 && barajaJugador != null && numeroCartasJugador >= 2 && xo >= 0 && yo >= 0 && barajaCroupier != null && barajaCroupier.length >= 2 && mt != null && numeroCartasCroupier >= 2;
     //@ ensures mt != null;
-    public static void mostrarCartas(MaquinaDeTrazados mt, String nombre, int apuesta, int creditos, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier, int numeroCartasCroupier){
+    public static void mostrarCartas(MaquinaDeTrazados mt, String nombre, int juegos, int apuesta, int creditos, Carta[] barajaJugador, int numeroCartasJugador, int xo, int yo, Carta[] barajaCroupier, int numeroCartasCroupier){
         // * Limpiar la pantalla
         mt.limpiar();
 
@@ -480,6 +481,12 @@ public class Blackjack{
         int yCreditos = yApuesta + 20;
         int xCreditos = mt.XMAX/2 - 50;
         mt.dibujarString("Creditos: " + creditos, xCreditos, yCreditos, Colores.WHITE);
+
+        //@ assume yCreditos + 20 < Integer.MAX_VALUE && mt.XMAX/2 - 50 < Integer.MAX_VALUE && mt.XMAX/2 - 50 > 0;
+        int yJuegos = yCreditos + 20;
+        int xJuegos = mt.XMAX/2 - 50;
+        //@ assume juegos >= 0 && juegos + 1 < Integer.MAX_VALUE;
+        mt.dibujarString("Juegos: " + (juegos+1), xJuegos, yJuegos, Colores.WHITE);
 
         mt.mostrar();
         // * Pausar la ejecucion por 10 segundos
