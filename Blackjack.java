@@ -47,6 +47,7 @@ public class Blackjack{
         int juegos = 0;
         int ganadas = 0;
         int perdidas = 0;
+        int empates = 0;
 
         // * Bienvenida y pedir nombre
         System.out.println("Bienvenido al juego de Blackjack!");
@@ -120,7 +121,10 @@ public class Blackjack{
                     if(accion == 3){
                         if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                             apuesta = apuesta * 2;
-                            // TODO: Dar carta
+                            manoJugador = agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
+                            cartasJugador++;
+                            xInicial = mt.XMAX/2 - cartasJugador*50;
+                            manoJugadorValor = valorCartas(manoJugador, cartasJugador);
                         }
                         else{
                             System.out.println("No puede doblar!");
@@ -148,13 +152,27 @@ public class Blackjack{
                 // Turno del croupier
                 if(partidaContinua){
                     accionesDelCuprier(manoCroupierValor);
-                    //@ assert manoCroupierValor >= 1 && manoCroupierValor <= 31;
-                    if(manoCroupierValor > 21) {
+                    if(manoCroupierValor < 17){
+                        manoCroupier = agregarCartaAlMazo(cartasCroupier, manoCroupier, mazo);
+                        cartasCroupier++;
+                        manoCroupierValor = valorCartas(manoCroupier, cartasCroupier);
+                    }
+                    else if(manoCroupierValor > 21) {
                         System.out.println("El cuprier ha perdido!");
                         ganadas++;
                         partidaContinua = false;                    
                     }
-                    mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
+                    if(manoCroupierValor == 21){
+                        System.out.println("El cuprier ha ganado!");
+                        perdidas++;
+                        partidaContinua = false;
+                    }
+                    else
+                        mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, xInicial, 60, manoCroupier, cartasCroupier);
+                }
+                if(manoCroupierValor == 21){
+                    System.out.println("Empate!");
+                    empates++;
                 }
             }
             juegos++;
