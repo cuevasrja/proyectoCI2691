@@ -139,13 +139,11 @@ public class Blackjack{
                 }
                 cartasJugador = actualizarNumeroCartas(manoJugador, cartasJugador);
                 manoJugadorValor = valorCartas(manoJugador, cartasJugador);
-                // Turno del croupier
+
+                // ? Turno del croupier
                 if(partidaContinua){
-                    accionesDelCuprier(manoCroupierValor);
-                    if(manoCroupierValor < 17){
-                        agregarCartaAlMazo(cartasCroupier, manoCroupier, mazo);
-                    }
-                    else if(manoCroupierValor > 21) {
+                    accionesDelCuprier(manoCroupierValor, cartasCroupier, manoCroupier, mazo);
+                    if(manoCroupierValor > 21) {
                         System.out.println("El cuprier ha perdido!");
                         ganadas++;
                         creditos += ganancias(apuesta, manoCroupierValor, manoJugadorValor);
@@ -231,10 +229,11 @@ public class Blackjack{
             i = i+1;
         }
     }
-    //@ requires numeroCartas >= 0 && numeroCartas < 21 && (mano.length == 21 || mano.length == 17) && mazo.length == 56;
-    //@ ensures (\forall int i; 0 <= i && i < numeroCartas+1; mano[i].ordinal() >= 0 && mano[i].ordinal() < 56) ==> mano[numeroCartas].ordinal() >= 0 && mano[numeroCartas].ordinal() < 56;
+    //@ requires mazo != null && mano != null;
+    //@ ensures (\forall int i; 0 <= i && i < numeroCartas+1; mano[i].ordinal() >= 0 && mano[i].ordinal() < mazo.length) ==> mano.length > numeroCartas;
     public static void agregarCartaAlMazo(int numeroCartas, Carta[] mano, Carta[] mazo){
         int cantidadCartas = mazo.length;
+        //@ assume Math.random()*cantidadCartas >= 0 && Math.random()*cantidadCartas < cantidadCartas;
         int carta = (int) (Math.random() * cantidadCartas);
         //@ assume 0 <= carta && carta < cantidadCartas && 0 <= numeroCartas && numeroCartas < mano.length;
         mano[numeroCartas] = mazo[carta];
@@ -293,19 +292,15 @@ public class Blackjack{
     }
     
     /**
-    * @param manoCroupierValor Requires: manoCroupierValor >= 1 && manoCroupierValor <= 31
+    * @param manoCroupierValor Requires: manoCroupierValor >= 1 && manoCroupierValor <= 21 && numeroCartasCroupier >= 0 && manoCroupier.length == 17 && mazo.length == 56 
     * @ensures true;
     */
-    public static void accionesDelCuprier(int manoCroupierValor) {
+    public static void accionesDelCuprier(int manoCroupierValor, int numeroCartasCroupier, Carta[] manoCroupier, Carta[] mazo) {
         if(manoCroupierValor < 17) {
-            //agregarCartaAlMazo(manoCroupier, barajaIndex); 
-            //Actualizar
+            agregarCartaAlMazo(numeroCartasCroupier, manoCroupier, mazo); 
         }
         else if(manoCroupierValor >= 17 && manoCroupierValor <= 21) {
-            // No hace nada
-        }
-        else if(manoCroupierValor > 21) {
-            System.out.println("El cuprier ha perdido!");
+            System.out.println("El croupier se queda con su mano actual");
         }
     }
     //@ requires apuesta >= 10 && manoCroupierValor >= 0 && manoJugadorValor >= 0;
