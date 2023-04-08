@@ -1,7 +1,6 @@
 // * Scanner para lectura de datos
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-import java.io.Console;
 
 // ! Libreria para interfaz grafica
 import java.awt.Font;
@@ -177,20 +176,23 @@ public class Blackjack{
     //@ requires true;
     //@ ensures \result.length() > 0;
     public static /*@ non_null @*/ String pedirNombre(){
-        Scanner lectura = new Scanner (System.in);
+        //@ assume System.in != null;
+        Scanner lectura = new Scanner(System.in);
+        //@ assume lectura != null;
         System.out.print("Ingrese su nombre: ");
         String nombre = lectura.nextLine();
         if(nombre.length() == 0){
             System.out.println("Debe ingresar un nombre!");
             nombre = pedirNombre();
         }
-        lectura.close();
         return nombre;
     }
     //@ requires creditos > 0 && apuestaMin >= 0;
     //@ ensures \result >= apuestaMin && \result <= creditos;
     public static /*@ non_null @*/ int pedirApuesta(int creditos, int apuestaMin){
-        Scanner lectura = new Scanner (System.in);
+        //@ assume System.in != null;
+        Scanner lectura = new Scanner(System.in);
+        //@ assume lectura != null;
         System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a ");
         System.out.print(apuestaMin);
         System.out.print(": ");
@@ -203,7 +205,6 @@ public class Blackjack{
             System.out.println("No tiene suficientes creditos para apostar esa cantidad!");
             apuesta = pedirApuesta(creditos, apuestaMin);
         }
-        lectura.close();
         return apuesta;
     }
     //@ requires mazo.length == 56 && (mano.length == 21 || mano.length == 17);
@@ -274,11 +275,13 @@ public class Blackjack{
     //@ requires true;
     //@ ensures \result >= 1 && \result <= 4;
     public static /*@ non_null @*/ int pedirAccion(){
-        Console console = System.console();
+        //@ assume System.in != null;
+        Scanner lectura = new Scanner(System.in);
+        //@ assume lectura != null;
         int accion = 0;
-        String decision = console.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
-        //@ assume decision != null;
-        accion = Integer.parseInt(decision);
+        System.out.println("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+        accion = lectura.nextInt();
+        //@ assume accion < Integer.MAX_VALUE && accion > Integer.MIN_VALUE;
         if(accion < 1 || accion > 4){
             System.out.println("Por favor, ingrese una opcion valida.");
             accion = pedirAccion();
