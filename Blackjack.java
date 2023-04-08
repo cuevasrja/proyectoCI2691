@@ -100,13 +100,7 @@ public class Blackjack{
                 }
                 else if(manoJugadorValor < 21){ 
                     Console consola = System.console();               
-                    String decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
-                    int accion = Integer.parseInt(decision);
-                    while(accion < 1 || accion > 4){
-                        System.out.println("Opcion Invalida");
-                        decision = consola.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
-                        accion = Integer.parseInt(decision);
-                    }
+                    int accion = pedirAccion(consola);
                     if(accion == 3){
                         if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                             apuesta = apuesta * 2;
@@ -277,6 +271,19 @@ public class Blackjack{
             i = i+1;
         }
         return numeroCartasActualizado;
+    }
+    //@ requires console != null;
+    //@ ensures \result >= 1 && \result <= 4;
+    public static int pedirAccion(Console console){
+        int accion = 0;
+        String decision = console.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
+        //@ assume decision != null;
+        accion = Integer.parseInt(decision);
+        if(accion < 1 || accion > 4){
+            System.out.println("Por favor, ingrese una opcion valida.");
+            accion = pedirAccion(console);
+        }
+        return accion;
     }
     //@ requires a == 21;
     //@ ensures true;
