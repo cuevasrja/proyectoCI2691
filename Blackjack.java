@@ -51,10 +51,8 @@ public class Blackjack{
 
         // * Bienvenida
         System.out.println("Bienvenido al juego de Blackjack!");
-        // * Leer nombre y declarar Scanner
-        Scanner lectura = new Scanner (System.in);
         //* Pedir nombre
-        String nombre = pedirNombre(lectura);
+        String nombre = pedirNombre();
         System.out.println("Bienvenido " + nombre + "!");
 
         while(continuar && juegos < juegosMax && creditos >= apuestaMin){
@@ -71,7 +69,7 @@ public class Blackjack{
 
             // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
-            apuesta = pedirApuesta(creditos, apuestaMin, lectura);
+            apuesta = pedirApuesta(creditos, apuestaMin);
             // * Mostrar apuesta y restar creditos disponibles
             System.out.println("Apuesta: " + apuesta);
 
@@ -99,8 +97,7 @@ public class Blackjack{
                     partidaContinua = false;
                 }
                 else if(manoJugadorValor < 21){ 
-                    Console consola = System.console();               
-                    int accion = pedirAccion(consola);
+                    int accion = pedirAccion();
                     if(accion == 3){
                         if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                             apuesta = apuesta * 2;
@@ -169,8 +166,6 @@ public class Blackjack{
             System.out.println("No tiene suficientes creditos para continuar!");
         }
         
-        // * Cerrar Scanner
-        lectura.close();
         // * Mostrar resultados y finalizar juego
         System.out.println("Juegos totales: " + juegos + " de " + juegosMax);
         System.out.println("Juegos ganados: " + ganadas);
@@ -179,32 +174,36 @@ public class Blackjack{
         System.out.println("Creditos restantes: " + creditos);
         System.out.println("Gracias por jugar!");
     }
-    //@ requires lectura != null;
+    //@ requires true;
     //@ ensures \result.length() > 0;
-    public static String pedirNombre(Scanner lectura){
+    public static /*@ non_null @*/ String pedirNombre(){
+        Scanner lectura = new Scanner (System.in);
         System.out.print("Ingrese su nombre: ");
         String nombre = lectura.nextLine();
         if(nombre.length() == 0){
             System.out.println("Debe ingresar un nombre!");
-            nombre = pedirNombre(lectura);
+            nombre = pedirNombre();
         }
+        lectura.close();
         return nombre;
     }
-    //@ requires creditos > 0 && apuestaMin >= 0 && lectura != null;
+    //@ requires creditos > 0 && apuestaMin >= 0;
     //@ ensures \result >= apuestaMin && \result <= creditos;
-    public static int pedirApuesta(int creditos, int apuestaMin, Scanner lectura){
+    public static /*@ non_null @*/ int pedirApuesta(int creditos, int apuestaMin){
+        Scanner lectura = new Scanner (System.in);
         System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a ");
         System.out.print(apuestaMin);
         System.out.print(": ");
         int apuesta = lectura.nextInt();
         if(apuesta < apuestaMin){ // * Si la apuesta es menor a 10
             System.out.println("La apuesta minima es de 10 creditos!");
-            apuesta = pedirApuesta(creditos, apuestaMin, lectura);
+            apuesta = pedirApuesta(creditos, apuestaMin);
         }
         else if(apuesta > creditos){ // * Si la apuesta es mayor a los creditos
             System.out.println("No tiene suficientes creditos para apostar esa cantidad!");
-            apuesta = pedirApuesta(creditos, apuestaMin, lectura);
+            apuesta = pedirApuesta(creditos, apuestaMin);
         }
+        lectura.close();
         return apuesta;
     }
     //@ requires mazo.length == 56 && (mano.length == 21 || mano.length == 17);
@@ -272,16 +271,17 @@ public class Blackjack{
         }
         return numeroCartasActualizado;
     }
-    //@ requires console != null;
+    //@ requires true;
     //@ ensures \result >= 1 && \result <= 4;
-    public static int pedirAccion(Console console){
+    public static /*@ non_null @*/ int pedirAccion(){
+        Console console = System.console();
         int accion = 0;
         String decision = console.readLine("Que quiere hacer? \n\n Pedir carta - Escriba '1' \n Plantarse - Escriba '2' \n Doblar - Escriba '3' \n Salir del Juego - Escriba '4'\n");
         //@ assume decision != null;
         accion = Integer.parseInt(decision);
         if(accion < 1 || accion > 4){
             System.out.println("Por favor, ingrese una opcion valida.");
-            accion = pedirAccion(console);
+            accion = pedirAccion();
         }
         return accion;
     }
