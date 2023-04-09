@@ -67,7 +67,7 @@ public class Blackjack{
 
             // * Mostrar creditos y pedir apuesta
             System.out.println("Sus creditos son: " + creditos);
-            apuesta = pedirApuesta(creditos, apuestaMin);
+            apuesta = pedirApuesta(creditos, apuestaMin, 0);
             // * Mostrar apuesta y restar creditos disponibles
             System.out.println("Apuesta: " + apuesta);
 
@@ -184,23 +184,32 @@ public class Blackjack{
         }
         return nombre;
     }
-    //@ requires creditos > 0 && apuestaMin >= 0;
+    //@ requires creditos > 0 && apuestaMin >= 0 && intentos >= 0 && intentos <= 3;
     //@ ensures \result >= apuestaMin && \result <= creditos;
-    public static /*@ non_null @*/ int pedirApuesta(int creditos, int apuestaMin){
+    public static /*@ non_null @*/ int pedirApuesta(int creditos, int apuestaMin, int intentos){
+        int apuesta = 0;
         //@ assume System.in != null;
         Scanner lectura = new Scanner(System.in);
         //@ assume lectura != null;
-        System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a ");
-        System.out.print(apuestaMin);
-        System.out.print(": ");
-        int apuesta = lectura.nextInt();
+        if (intentos == 3){
+            System.out.println("Ha excedido el numero maximo de intentos! \nAgregaremos la apuesta minimia");
+            apuesta = apuestaMin;
+        }
+        else{
+            System.out.print("Por favor, ingrese su apuesta. Esta debe ser mayor o igual a ");
+            System.out.print(apuestaMin);
+            System.out.print(": ");
+            apuesta = lectura.nextInt();
+        }
         if(apuesta < apuestaMin){ // * Si la apuesta es menor a 10
             System.out.println("La apuesta minima es de 10 creditos!");
-            apuesta = pedirApuesta(creditos, apuestaMin);
+            //@ assume intentos < 3;
+            apuesta = pedirApuesta(creditos, apuestaMin, intentos + 1);
         }
         else if(apuesta > creditos){ // * Si la apuesta es mayor a los creditos
             System.out.println("No tiene suficientes creditos para apostar esa cantidad!");
-            apuesta = pedirApuesta(creditos, apuestaMin);
+            //@ assume intentos < 3;
+            apuesta = pedirApuesta(creditos, apuestaMin, intentos + 1);
         }
         return apuesta;
     }
