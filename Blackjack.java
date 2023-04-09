@@ -94,7 +94,23 @@ public class Blackjack{
                 }
                 else if(manoJugadorValor < 21){ 
                     int accion = pedirAccion();
-                    if(accion == 3){
+                    if(accion == 2){
+                        if(los2SePlantan(manoCroupierValor) == true){
+                            System.out.print("Ambos se plantan, Veamos quien esta mas cerca de 21 \n");
+                            if(manoJugadorValor > manoCroupierValor){
+                                creditos = creditos + apuesta;
+                                System.out.println("Usted gana!");
+                                break;
+                            }else{
+                                creditos -= apuesta;
+                                System.out.println("Gana el cuprier!");
+                                break;
+                            }
+                        }else{
+                            break;               
+                        }
+                    } 
+                    else if(accion == 3){
                         if(manoJugadorValor == 9 || manoJugadorValor == 10 || manoJugadorValor == 11){
                             apuesta = apuesta * 2;
                             agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
@@ -103,22 +119,6 @@ public class Blackjack{
                             System.out.println("No puede doblar!");
                         }                
                     }
-                    else if(accion == 2){
-                        if(los2SePlantan(manoCroupierValor) == true){
-                            System.out.print("Ambos se plantan, Veamos quien esta mas cerca de 21 \n");
-                            if(manoJugadorValor > manoCroupierValor){
-                                creditos = creditos + apuesta;
-                                System.out.println("Usted gana!");
-                                continuar = false;
-                            }else{
-                                creditos -= apuesta;
-                                System.out.println("Gana el cuprier!");
-                                continuar = false;
-                            }
-                        }else{
-                            break;               
-                        }
-                    } 
                     else if(accion == 1){                        
                         agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
                     }
