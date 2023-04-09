@@ -98,16 +98,12 @@ public class Blackjack{
                         if(los2SePlantan(manoCroupierValor) == true){
                             System.out.print("Ambos se plantan, Veamos quien esta mas cerca de 21 \n");
                             if(manoJugadorValor > manoCroupierValor){
-                                creditos = creditos + apuesta;
                                 System.out.println("Usted gana!");
-                                break;
+                                partidaContinua = false;
                             }else{
-                                creditos -= apuesta;
                                 System.out.println("Gana el cuprier!");
-                                break;
+                                partidaContinua = false;
                             }
-                        }else{
-                            break;               
                         }
                     } 
                     else if(accion == 3){
