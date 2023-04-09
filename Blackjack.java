@@ -104,8 +104,21 @@ public class Blackjack{
                         }                
                     }
                     else if(accion == 2){
-                        // TODO: Funcion de acabar turno                
-                    }
+                        if(los2SePlantan(manoCroupierValor) == true){
+                            System.out.print("Ambos se plantan, Veamos quien esta mas cerca de 21 \n");
+                            if(manoJugadorValor > manoCroupierValor){
+                                creditos = creditos + apuesta;
+                                System.out.println("Usted gana!");
+                                continuar = false;
+                            }else{
+                                creditos -= apuesta;
+                                System.out.println("Gana el cuprier!");
+                                continuar = false;
+                            }
+                        }else{
+                            break;               
+                        }
+                    } 
                     else if(accion == 1){                        
                         agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
                     }
@@ -306,7 +319,20 @@ public class Blackjack{
     public static void jugadorTieneMasDe21(int a) {
         System.out.println("Usted ha perdido esta mano");
     }
-    
+    /**
+ * Determina si el croupier se planta o no, en función del valor de su mano.
+ * @param manoCroupierValor El valor de la mano del croupier.
+ * @requires manoCroupierValor >= 0 && manoCroupierValor <= 31
+ * @ensures \result == (manoCroupierValor >= 17 && manoCroupierValor <= 21)
+ * @return true si el croupier se planta, false en caso contrario.
+ */
+    public static boolean los2SePlantan(int manoCroupierValor) {
+        boolean ambosPlantan = false;
+        if(manoCroupierValor >= 17 && manoCroupierValor <= 21){
+            ambosPlantan = true;
+        }
+        return ambosPlantan;        
+    }    
     /**
     * @param manoCroupierValor Requires: manoCroupierValor >= 1 && manoCroupierValor <= 21 && numeroCartasCroupier >= 0 && manoCroupier.length == 17 && mazo.length == 56 
     * @ensures true;
