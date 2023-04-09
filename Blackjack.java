@@ -85,6 +85,7 @@ public class Blackjack{
             // * Mostrar cartas del jugador y primera del croupier
             System.out.println("Preparando mesa...");
             System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
+            pausarEjecucion(2);
             mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, 60, manoCroupier, cartasCroupier, false);
 
 
@@ -129,18 +130,19 @@ public class Blackjack{
                     accionesDelCuprier(manoCroupierValor, cartasCroupier, manoCroupier, mazo);
                     cartasCroupier = actualizarNumeroCartas(manoCroupier, cartasCroupier);
                     manoCroupierValor = valorCartas(manoCroupier, cartasCroupier);
-                    if(partidaContinua){
-                        System.out.println("Preparando mesa...");
-                        System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
-                        mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, 60, manoCroupier, cartasCroupier, false);
-                    }
+                    System.out.println("Preparando mesa...");
+                    System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
+                    pausarEjecucion(2);
+                    mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, 60, manoCroupier, cartasCroupier, false);
+                    
                 }
                 if(!partidaContinua && continuar){
                     ganancias = ganancias(apuesta, manoCroupierValor, manoJugadorValor);
                     creditos += ganancias;
+                    agregarResultado(resultados, apuesta, manoCroupierValor, manoJugadorValor);
+                    pausarEjecucion(5);
                     mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, 60, manoCroupier, cartasCroupier, true);
                     System.out.println("La partida ha terminado!");
-                    agregarResultado(resultados, apuesta, manoCroupierValor, manoJugadorValor);
                 }
             }
             juegos++;
