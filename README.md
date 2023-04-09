@@ -13,7 +13,7 @@ Se verifico con prueba estatica usando el comando:
 
 Despues se realizo la prueba dinamica con el comando:
 
-`openjml --rac Blackjack.java`
+`openjml --rac Blackjack.java -cp ./lib/maquinaTrazados-v0.1.jar Blackjack.java`
 
 Despues, para probar el programa, se ejecuto con el comando
 
