@@ -651,12 +651,12 @@ public class Blackjack{
         //@ assume juegos >= 0 && juegos + 1 < Integer.MAX_VALUE;
         mt.dibujarString("Juegos: " + (juegos+1), xJuegos, yJuegos, Colores.WHITE);
 
+        mt.configurarFuente("Serif", Font.BOLD, 24);
+        //@ assume mt.XMAX/2 - 150 < Integer.MAX_VALUE && mt.XMAX/2 - 150 > 0;
+        int xGanancias = mt.XMAX/2 - 150;
+        //@ assume yCreditos + 60 < Integer.MAX_VALUE;
+        int yGanancias = yCreditos + 60;
         if(mostrarCartasCroupier){
-            mt.configurarFuente("Serif", Font.BOLD, 24);
-            //@ assume mt.XMAX/2 - 150 < Integer.MAX_VALUE && mt.XMAX/2 - 150 > 0;
-            int xGanancias = mt.XMAX/2 - 150;
-            //@ assume yCreditos + 60 < Integer.MAX_VALUE;
-            int yGanancias = yCreditos + 60;
             if(ganancias > 0){
                 mt.dibujarString("Has ganado la partida", xGanancias, yGanancias, Colores.BLUE);
                 mt.dibujarString("Ganancias: " + ganancias, xGanancias, yGanancias + 30, Colores.BLUE);
@@ -670,7 +670,10 @@ public class Blackjack{
                 mt.dibujarString("Has empatado la partida", xGanancias, yGanancias, Colores.WHITE);
             }
         }
-
+        else{
+            //@ assume xGanancias - 100 > 0 && xGanancias - 100 < Integer.MAX_VALUE;
+            mt.dibujarString("Espere a que la mesa cierre para continuar", xGanancias-100, yGanancias, Colores.WHITE);
+        }
         mt.mostrar();
         // * Pausar la ejecucion por 10 segundos
         pausarEjecucion(10);
