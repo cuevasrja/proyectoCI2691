@@ -87,6 +87,7 @@ public class Blackjack{
             System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
             pausarEjecucion(2);
             mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, manoCroupier, cartasCroupier, !partidaContinua, ganancias);
+            System.out.println("El valor de sus cartas es de: " + manoJugadorValor);
 
 
             // TODO: Agregar metodos para cada caso
@@ -114,7 +115,8 @@ public class Blackjack{
                         }
                         else{ // * Si no puede doblar
                             System.out.println("No puede doblar!");
-                        }                
+                        } 
+                                       
                     }
                     else if(accion == 1){ // * Si pide carta
                         agregarCartaAlMazo(cartasJugador, manoJugador, mazo);
@@ -153,6 +155,7 @@ public class Blackjack{
                     System.out.println("Por favor, espere a que la mesa se cierre para continuar...");
                     pausarEjecucion(2);
                     mostrarCartas(mt, nombre, juegos, apuesta, creditos, manoJugador, cartasJugador, manoCroupier, cartasCroupier, !partidaContinua, ganancias);
+                    System.out.println("El valor de sus cartas es de: " + manoJugadorValor);
                 }
                 // * Mostrar todas las cartas y resultados
                 else if(!partidaContinua && continuar){
@@ -310,7 +313,7 @@ public class Blackjack{
         return accion;
     }
     /**
- * Determina si el croupier se planta o no, en función del valor de su mano.
+ * Determina si el croupier se planta o no, en funcion del valor de su mano.
  * @param manoCroupierValor El valor de la mano del croupier.
  * @requires manoCroupierValor >= 0 && manoCroupierValor <= 31
  * @ensures \result == (manoCroupierValor >= 17)
@@ -340,7 +343,10 @@ public class Blackjack{
     //@ ensures (((manoJugadorValor < manoCroupierValor && manoCroupierValor <= 21) || manoJugadorValor > 21) ==> \result == -apuesta) || ((manoJugadorValor > manoCroupierValor && manoJugadorValor < 21) ==> \result == apuesta) || ((manoJugadorValor == manoCroupierValor) ==> \result == 0) || (manoJugadorValor == 21 ==> \result == apuesta*3/2);
     public static /*@ pure @*/ int ganancias(int apuesta, int manoCroupierValor, int manoJugadorValor) {
         int ganancia = 0;
-        if(manoJugadorValor > 21) {
+        if(manoJugadorValor > 21 && manoCroupierValor > 21) {
+            ganancia = 0;
+        }
+        else if(manoJugadorValor > 21) {
             ganancia = -apuesta;
         }
         else if(manoCroupierValor > 21) {
@@ -366,18 +372,27 @@ public class Blackjack{
     public static void agregarResultado(int[] resultados, int apuesta, int manoCroupierValor, int manoJugadorValor) {
         int ganancia = ganancias(apuesta, manoCroupierValor, manoJugadorValor);
         if(ganancia < 0){
+            if(manoCroupierValor == 21){
+                System.out.println("El croupier tiene BlackJack!");
+            }
             System.out.println("Usted ha perdido esta mano");
+            System.out.println("El valor de sus cartas es de: " + manoJugadorValor+ " y el valor de las cartas del couprier es: " + manoCroupierValor);
             //@ assume resultados[0] + 1 < Integer.MAX_VALUE;
             resultados[0] = resultados[0] + 1;
         }
         else if(ganancia == 0){
             System.out.println("Usted ha empatado esta mano");
+            System.out.println("El valor de sus cartas es de: " + manoJugadorValor+ " y el valor de las cartas del couprier es: " + manoCroupierValor);
             //@ assume resultados[1] + 1 < Integer.MAX_VALUE;
             resultados[1] = resultados[1] + 1;
         }
         else{
+            if(manoJugadorValor == 21){
+                System.out.println("BlackJack!");
+            }
             System.out.println("Usted ha ganado esta mano");
             //@ assume resultados[2] + 1 < Integer.MAX_VALUE;
+            System.out.println("El valor de sus cartas es de: " + manoJugadorValor+ " y el valor de las cartas del couprier es: " + manoCroupierValor);
             resultados[2] = resultados[2] + 1;
         }
     }
