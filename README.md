@@ -17,4 +17,4 @@ Despues se realizo la prueba dinamica con el comando:
 
 Despues, para probar el programa, se ejecuto con el comando
 
-`openjml-java -cp ./lib/maquinaTrazados-v0.1.jar:. Blackjack`
+`openjml-java -cp ./lib/maquinaTrazados-v0.1.jar:. Blackjack.java`
