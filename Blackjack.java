@@ -246,38 +246,47 @@ public class Blackjack{
             i = i+1;
         }
     }
-    //@ requires mazo != null && mano != null && numeroCartas >= 0 && numeroCartas < mano.length && mano.length <= 21 && mazo.length > 0;
-    //@ ensures (\forall int i; 0 <= i && i < numeroCartas+1; mano[i].ordinal() >= 0 && mano[i].ordinal() < mazo.length) ==> mano.length > numeroCartas;
-    public static void agregarCartaAlMazo(int numeroCartas, Carta[] mano, Carta[] mazo){
-        int cantidadCartas = mazo.length;
-        int carta = (int) (Math.random() * cantidadCartas);
-        //@ assume 0 <= carta && carta < cantidadCartas && 0 <= numeroCartas && numeroCartas < mano.length;
-        mano[numeroCartas] = mazo[carta];
-    }
-    //@ requires numeroCartas >= 0 && numeroCartas <= 21 && mano.length <= 21 && numeroCartas <= mano.length;
-    //@ ensures( \result >= 0 && \result < Integer.MAX_VALUE) <== numeroCartas > 0;
-    public static /*@ pure @*/ int valorCartas(Carta[] mano, int numeroCartas){
-        int valor = 0;
-        int i = 0;
-        //@ maintaining 0 <= i && i <= numeroCartas && i <= mano.length;
-        //@ decreases numeroCartas - i;
-        while(0 <= i && i < numeroCartas && i < mano.length){
-            int indiceCarta = mano[i].ordinal();
-            //@ assume 0 <= indiceCarta && indiceCarta < 56;
-            //@ assume 0 <= valor && valor + 11 < Integer.MAX_VALUE;
-            if(indiceCarta <= 35){
-                valor = valor + indiceCarta/4 + 1;
-            }
-            else if(indiceCarta <= 51){
-                valor = valor + 10;
-            }
-            else{
-                valor = valor + 11;
-            }
-            i = i+1;
+  
+   /**
+* @param mazo Requires: mazo != null && mazo.length > 0
+* @param mano Requires: mano != null && mano.length <= 21 && numeroCartas >= 0 && numeroCartas < mano.length
+* @param numeroCartas Requires: numeroCartas >= 0 && numeroCartas < mano.length
+* @ensures (\forall int i; 0 <= i && i < numeroCartas+1; mano[i].ordinal() >= 0 && mano[i].ordinal() < mazo.length) ==> mano.length > numeroCartas;
+*/
+public static void agregarCartaAlMazo(int numeroCartas, Carta[] mano, Carta[] mazo){
+    int cantidadCartas = mazo.length;
+    int carta = (int) (Math.random() * cantidadCartas);
+    //@ assume 0 <= carta && carta < cantidadCartas && 0 <= numeroCartas && numeroCartas < mano.length;
+    mano[numeroCartas] = mazo[carta];
+}
+    /**
+* @param mano Requires: mano != null && mano.length <= 21 && numeroCartas >= 0 && numeroCartas <= 21 && numeroCartas <= mano.length
+* @param numeroCartas Requires: numeroCartas >= 0 && numeroCartas <= 21 && mano.length <= 21 && numeroCartas <= mano.length
+* @ensures (\result >= 0 && \result < Integer.MAX_VALUE) <==> numeroCartas > 0 && numeroCartas <= mano.length;
+*/
+public static /*@ pure @*/ int valorCartas(Carta[] mano, int numeroCartas){
+    int valor = 0;
+    int i = 0;
+    //@ assume (i >= 0 && i <= numeroCartas && i <= mano.length);
+    //@ maintaining (0 <= i && i <= numeroCartas && i <= mano.length);
+    //@ decreases numeroCartas - i;
+    while(0 <= i && i < numeroCartas && i < mano.length){        
+        int indiceCarta = mano[i].ordinal();
+        //@ assume 0 <= indiceCarta && indiceCarta < 56;
+        //@ assume 0 <= valor && valor + 11 < Integer.MAX_VALUE;
+        if(indiceCarta <= 35){
+            valor = valor + indiceCarta/4 + 1;
         }
-        return valor;
+        else if(indiceCarta <= 51){
+            valor = valor + 10;
+        }
+        else{
+            valor = valor + 11;
+        }
+        i = i+1;
     }
+    return valor;
+}
     //@ requires numeroCartas >= 0 && numeroCartas <= 21 && (mano.length == 21 || mano.length == 17);
     //@ ensures \result >= 0 && \result <= mano.length <== (\forall int i; 0 <= i && i < \result; mano[i] != null);
     public static /*@ pure @*/ int actualizarNumeroCartas(Carta[] mano, int numeroCartas){
@@ -324,19 +333,21 @@ public class Blackjack{
         }
         return ambosPlantan;        
     }    
-    /**
-    * @param manoCroupierValor Requires: manoCroupierValor >= 1 && manoCroupierValor <= 21 && numeroCartasCroupier >= 0 && manoCroupier.length == 17 && mazo.length == 56 
-    * @ensures true;
-    */
-    public static void accionesDelCuprier(int manoCroupierValor, int numeroCartasCroupier, Carta[] manoCroupier, Carta[] mazo) {
-        if(manoCroupierValor < 17) {
-            System.out.println("El croupier pide una carta");
-            agregarCartaAlMazo(numeroCartasCroupier, manoCroupier, mazo);
-        }
-        else if(manoCroupierValor >= 17 && manoCroupierValor <= 21) {
-            System.out.println("El croupier se queda con su mano actual");
-        }
+    
+//@ requires manoCroupierValor >= 1 && manoCroupierValor <= 21;
+//@ requires numeroCartasCroupier >= 0;
+//@ requires manoCroupier.length == 17;
+//@ requires mazo.length == 56;
+//@ ensures true;
+public static void accionesDelCuprier(int manoCroupierValor, int numeroCartasCroupier, Carta[] manoCroupier, Carta[] mazo) {
+    if(manoCroupierValor < 17) {
+        System.out.println("El croupier pide una carta");
+        agregarCartaAlMazo(numeroCartasCroupier, manoCroupier, mazo);
     }
+    else if(manoCroupierValor >= 17 && manoCroupierValor <= 21) {
+        System.out.println("El croupier se queda con su mano actual");
+    }
+}
     //@ requires apuesta >= 10 && manoCroupierValor >= 0 && manoJugadorValor >= 0;
     //@ ensures (((manoJugadorValor < manoCroupierValor && manoCroupierValor <= 21) || manoJugadorValor > 21) ==> \result == -apuesta) || ((manoJugadorValor > manoCroupierValor && (manoJugadorValor < 21 || (numeroCartasJugador != 2 && manoJugadorValor == 21))) ==> \result == apuesta) || ((manoJugadorValor == manoCroupierValor) ==> \result == 0) || (manoJugadorValor == 21 && numeroCartasJugador == 2 ==> \result == apuesta*3/2);
     public static /*@ pure @*/ int ganancias(int apuesta, int manoCroupierValor, int manoJugadorValor, int numeroCartasJugador) {
@@ -659,15 +670,16 @@ public class Blackjack{
         if(mostrarCartasCroupier){
             if(ganancias > 0){
                 mt.dibujarString("Has ganado la partida", xGanancias, yGanancias, Colores.BLUE);
-                mt.dibujarString("Ganancias: " + ganancias, xGanancias, yGanancias + 30, Colores.BLUE);
+                mt.dibujarString("Creditos ganados: " + ganancias, xGanancias, yGanancias + 30, Colores.BLUE);
             }
             else if(ganancias < 0){
                 mt.dibujarString("Has perdido la partida", xGanancias, yGanancias, Colores.RED);
                 //@ assume -ganancias > 0 && -ganancias < Integer.MAX_VALUE;
-                mt.dibujarString("Perdidas: " + (-ganancias), xGanancias, yGanancias + 30, Colores.RED);
+                mt.dibujarString("Creditos perdidos: " + (-ganancias), xGanancias, yGanancias + 30, Colores.RED);
             }    
             else if (ganancias == 0){
                 mt.dibujarString("Has empatado la partida", xGanancias, yGanancias, Colores.WHITE);
+                mt.dibujarString("Tus creditos seran devueltos", xGanancias, yGanancias + 30, Colores.WHITE);
             }
         }
         else{
