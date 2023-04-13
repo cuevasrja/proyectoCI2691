@@ -521,7 +521,7 @@ public static void accionesDelCuprier(int manoCroupierValor, int numeroCartasCro
             mt.dibujarOvaloLleno(sx-6, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+16, sy+7, 30, 30, Colores.BLACK);
             mt.dibujarOvaloLleno(sx+5, sy-15, 30, 30, Colores.BLACK);
-            mt.dibujarPoligonoLleno(new int[]{sx+5, sx+20, sx+35}, new int[]{sy+55,sy+25,sy+55}, 3, Colores.BLACK);
+            mt.dibujarPoligonoLleno(new int[]{sx + 10, sx + 20, sx + 30}, new int[]{sy+45, sy+30, sy+45}, 3, Colores.BLACK);
         }
 
         mt.configurarFuente("Serif", Font.BOLD, 18);
